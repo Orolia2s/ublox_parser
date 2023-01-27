@@ -7,11 +7,11 @@ TabWidth: 4
 UseTab: ForIndentation
 IndentAccessModifiers: false
 IndentCaseLabels: false
-IndentExternBlock: false
+IndentExternBlock: true
 IndentPPDirectives: AfterHash
 IndentWidth: 4
 IndentWrappedFunctionNames: false
-PPIndentWidth: 1
+PPIndentWidth: 4
 
 # ----- Line length -----
 ColumnLimit: 80
