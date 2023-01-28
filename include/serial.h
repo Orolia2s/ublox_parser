@@ -5,7 +5,7 @@
  * Manipulate a serial port connection
  */
 
-#include <termios.h> // for the union :/
+#include <termios.h>
 
 #include <stdint.h> // uint*_t
 

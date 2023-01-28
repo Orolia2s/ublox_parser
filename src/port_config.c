@@ -1,3 +1,4 @@
+#include "serial.h"
 #include "ublox.h"
 
 #include <fcntl.h>
@@ -8,6 +9,24 @@
 #include <unistd.h>
 
 /**
+ * Congigure a serial port to receive messages from the u-blox receiver.
+ *
+ * The UART1 port of the F9T receiver uses the following configuration by default:
+ *  - Data bits: 8
+ *  - Parity: None
+ *  - Stop bits: 1
+ *  - Baud rate: 38400
+ *
+ * The baud rate can be set to other values:
+ *  - 9600
+ *  - 19200
+ *  - 38400
+ *  - 57600
+ *  - 115200
+ *  - 230400
+ *  - 460800
+ *  - 921600
+ *
  * @return
  *   - the opened port file descriptor
  *   - `-1` on error
@@ -17,35 +36,14 @@ int ublox_open_serial_port(const char* port_name)
 	struct termios options;
 	int            port;
 
-	port = open(port_name, O_RDWR | O_NOCTTY);
+	if ((port = open(port_name, O_RDWR | O_NOCTTY)) < 0)
+		return -1;
 
 	tcgetattr(port, &options);
 
-	ft_print_memory(&options, sizeof(options));
-	ft_dprintf(STDIN_FILENO, "%u\n", options.c_cflag);
-
-	// Set baud rate
-	cfsetispeed(&options, B115200);
-	cfsetospeed(&options, B115200);
-
-	// Set parity and stop bits
-	options.c_cflag |= (CLOCAL | CREAD);
-	options.c_cflag &= ~PARENB;
-	options.c_cflag &= ~CSTOPB;
-
-	// Set character size
-	options.c_cflag &= ~CSIZE;
-	options.c_cflag |= CS8;
-
-	// Set flow control
-	options.c_cflag &= ~CRTSCTS;
-
-	// Set timeouts
-	options.c_cc[VMIN]  = 1;
-	options.c_cc[VTIME] = 5;
-
-	// Set the attributes
-	tcsetattr(port, TCSANOW, &options);
+	//ft_print_memory(&options, sizeof(options));
+	ft_print_memory(&options.c_iflag, sizeof(options.c_iflag));
+	ft_print_memory(&options.c_cflag, sizeof(options.c_cflag));
 
 	return port;
 }

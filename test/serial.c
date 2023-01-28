@@ -36,28 +36,28 @@ TEST_SECTION(serial_control_modes, extract_name, CONTROL_condition,
 );
 
 
-#define INPUT_condition(NAME, INITIALIZER, EXPECTED_VALUE) \
+#define INPUT_condition(NAME, EXPECTED_VALUE)              \
 	({                                                     \
-		struct serial_input_modes v = {ID INITIALIZER};    \
+		struct serial_input_modes v = {. NAME = true};     \
 		*(tcflag_t*)&v == EXPECTED_VALUE;                  \
 	})
 
 TEST_SECTION(serial_input_modes, extract_name, INPUT_condition,
-	(ignore_break,           (.ignore_break           = true), IGNBRK),
-	(signal_break,           (.signal_break           = true), BRKINT),
-	(discard_invalid_chars,  (.discard_invalid_chars  = true), IGNPAR),
-	(mark_errors,            (.mark_errors            = true), PARMRK),
-	(parity_check,           (.parity_check           = true),  INPCK),
-	(strip_8th_bit,          (.strip_8th_bit          = true), ISTRIP),
-	(map_nl_to_cr,           (.map_nl_to_cr           = true),  INLCR),
-	(ignore_cr,              (.ignore_cr              = true),  IGNCR),
-	(map_cr_to_nl,           (.map_cr_to_nl           = true),  ICRNL),
-	(map_upper_to_lower,     (.map_upper_to_lower     = true),  IUCLC),
-	(enable_start_stop_out,  (.enable_start_stop_out  = true),   IXON),
-	(any_can_restart_output, (.any_can_restart_output = true),  IXANY),
-	(enable_start_stop_in,   (.enable_start_stop_in   = true),  IXOFF),
-	(ring_bell_when_full,    (.ring_bell_when_full    = true),IMAXBEL),
-	(is_utf8,                (.is_utf8                = true),  IUTF8)
+	(ignore_break,          IGNBRK),
+	(signal_break,          BRKINT),
+	(discard_invalid_chars, IGNPAR),
+	(mark_errors,           PARMRK),
+	(parity_check,           INPCK),
+	(strip_8th_bit,         ISTRIP),
+	(map_nl_to_cr,           INLCR),
+	(ignore_cr,              IGNCR),
+	(map_cr_to_nl,           ICRNL),
+	(map_upper_to_lower,     IUCLC),
+	(enable_start_stop_out,   IXON),
+	(any_can_restart_output, IXANY),
+	(enable_start_stop_in,   IXOFF),
+	(ring_bell_when_full,  IMAXBEL),
+	(is_utf8,                IUTF8)
 );
 
 
