@@ -42,24 +42,24 @@ struct ublox_footer
  * A class is a grouping of messages which are related to each other.
  */
 DECLARE_ENUM_WITH_VALUES(ublox_class,
-	(NAV /**< Navigation Results Messages */,              0x01),
-	(RXM /**< Receiver Manager Messages */,                0x02),
-	(INF /**< Information Messages */,                     0x04),
+	(NAV /**< Navigation Results Messages              */, 0x01),
+	(RXM /**< Receiver Manager Messages                */, 0x02),
+	(INF /**< Information Messages                     */, 0x04),
 	(ACK /**< Acknowledge and Not-Acknowledge Messages */, 0x05),
-	(CFG /**< Configuration Input Messages */,             0x06),
-	(UPD /**< Firmware Update Messages */,                 0x09),
-	(MON /**< Monitoring Messages */,                      0x0A),
-	(TIM /**< Timing Messages */,                          0x0D),
-	(MGA /**< Multiple GNSS Assistance Messages */,        0x13),
-	(LOG /**< Logging Messages */,                         0x21),
-	(SEC /**< Security Feature Messages */,                0x27)
+	(CFG /**< Configuration Input Messages             */, 0x06),
+	(UPD /**< Firmware Update Messages                 */, 0x09),
+	(MON /**< Monitoring Messages                      */, 0x0A),
+	(TIM /**< Timing Messages                          */, 0x0D),
+	(MGA /**< Multiple GNSS Assistance Messages        */, 0x13),
+	(LOG /**< Logging Messages                         */, 0x21),
+	(SEC /**< Security Feature Messages                */, 0x27)
 );
 
 DECLARE_ENUM_WITH_VALUES(ublox_constellation,
-	(GPS     /**< Global Positioning System, from USA */,             0),
-	(Galileo /**< From Europe */,                                     2),
-	(BeiDou  /**< BeiDou Navigation Satellite System, from China */,  3),
-	(QZSS    /**< Quasi-Zenith Satellite System, from Japan */,       5),
+	(GPS     /**< Global Positioning System, from the US          */, 0),
+	(Galileo /**< From Europe                                     */, 2),
+	(BeiDou  /**< BeiDou Navigation Satellite System, from China  */, 3),
+	(QZSS    /**< Quasi-Zenith Satellite System, from Japan       */, 5),
 	(GLONASS /**< Global Navigation Satellite System, from Russia */, 6)
 );
 

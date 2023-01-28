@@ -1,0 +1,8 @@
+#*#
+*~
+*.d
+*info.json
+*info.txt
+*.lock
+*.o
+*.pc
