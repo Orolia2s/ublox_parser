@@ -15,7 +15,7 @@ build: main
 main: $(OBJECTS)
 
 clean:
-	$(RM) $(OBJECTS)
+	$(RM) $(OBJECTS) $(OBJECTS:.o=.d)
 
 fclean: clean
 	$(RM) main
