@@ -11,6 +11,8 @@ Usage:
 General
   default          When no target is specified, this help is displayed
   help             Display this help.
+  conan            Install dependencies
+  run              Run the executable
 
 Building
   build            Compile both the library and the executable
@@ -28,4 +30,11 @@ Documentation
 Cleaning
   clean            Remove intermediate objects
   fclean           Remove all generated files
+```
+
+## Get started
+
+```console
+make conan
+make test
 ```

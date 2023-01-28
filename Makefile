@@ -13,7 +13,6 @@ DOC_FOLDER    := doc
 
 CPPFLAGS += -I $(HEADER_FOLDER)
 CPPFLAGS += $(shell pkg-config --cflags-only-I *.pc)
-CPPFLAGS += -Wno-gnu-designator
 CPPFLAGS += -MMD
 
 LDFLAGS += $(shell pkg-config --libs-only-L *.pc)
@@ -28,12 +27,26 @@ HTML  := $(DOC_FOLDER)/html/index.html
 MAN   := $(DOC_FOLDER)/man/man3/ublox.h.3
 LATEX := $(DOC_FOLDER)/latex
 
+# When rendering the help, pretty print certain words
+CYAN       := \033[36m
+BOLD       := \033[1m
+EOC        := \033[0m
+PP_COMMAND := $(CYAN)
+PP_SECTION := $(BOLD)
+
 ##@ General
 
 default: help ## When no target is specified, this help is displayed
 
 help: ## Display this help.
-	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make $(PP_COMMAND)<target>$(EOC)\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  $(PP_COMMAND)%-15s$(EOC) %s\n", $$1, $$2 } /^##@/ { printf "\n$(PP_SECTION)%s$(EOC)\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+
+conan: ## Install dependencies
+	conan install . --build=missing
+	( cd $(TEST_FOLDER) && conan install . --build=missing )
+
+run: $(EXECUTABLE) ## Run the executable
+	./$<
 
 ##@ Building
 
@@ -77,11 +90,11 @@ include $(wildcard *.d src/*.d) # To know on which header each .o depends
 
 $(EXECUTABLE): $(MAIN_OBJ) $(OBJECTS) # For now rely on Make's implicit rules
 
-$(LIBRARY): $(OBJECTS)
+$(LIBRARY): $(OBJECTS) # Group all the compiled objects into an indexed archive
 	$(AR) rcs $@ $^
 
 $(PDF): $(LATEX)/Makefile # Generate the pdf doc
 	$(MAKE) -C $(@D)
 
 $(MAN) $(HTML) $(LATEX)/Makefile: $(SOURCES) $(wildcard include/*.h) README.md # Generate the doc
-	doxygen
+	doxygen $(DOC_FOLDER)/Doxyfile
