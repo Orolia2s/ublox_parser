@@ -45,7 +45,7 @@ struct serial_input_modes
  */
 struct serial_control_modes
 {
-	uint32_t _              :4; /**< Unused */
+	uint32_t _unused        :4;
 	uint32_t character_size :2; /**< Number of bits used by a single character */
 	uint32_t two_stop_bits  :1; /**< Set two stop bits, rather than one */
 	uint32_t read           :1; /**< Enable receiver */
@@ -59,17 +59,27 @@ struct serial_control_modes
 };
 
 /**
- * Possible values of @ref serial_control_modes::character_size
+ * Possible values of @ref serial_control_modes::character_size.
+ *
+ * Used to specify the number of data bits per byte.
+ *
+ * 8 data bits are almost universally used in newer applications. 5 or 7 bits
+ * generally only make sense with older equipment such as teleprinters.
  */
 enum character_size
 {
-	character_size_5 = 0,
-	character_size_6 = 1,
-	character_size_7 = 2,
-	character_size_8 = 3
+	character_size_5 = 0, /**< for Baudot code */
+	character_size_6 = 1, /**< rarely used */
+	character_size_7 = 2, /**< for true ASCII */
+	character_size_8 = 3  /**< for most kinds of data */
 };
 
+/** Verbose alternative ot struct termios */
 typedef union serial_options serial_options_t;
+
+/**
+ * Holds a struct termios that can be modified using the verbose alternatives.
+ */
 union serial_options
 {
 	struct termios termios;

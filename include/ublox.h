@@ -17,18 +17,29 @@ extern const uint8_t sync_chars[2];
 
 /**
  * All ublox messages inherit from that type.
- * i.e. their address can be cast to:
- * `ublox_message_t*`
+ * i.e. their address can be cast to: `ublox_message_t*`
  */
 typedef struct ublox_header ublox_message_t;
+
+/**
+ * Common fields of all ublox messages.
+ * This represents what's in common to all ublox messages, excluding the
+ * constant preambule and the footer (because its offset varies)
+ */
 struct ublox_header
 {
-	uint8_t class;   /**< Message Class */
+	uint8_t  class;  /**< Message Class */
 	uint8_t  type;   /**< Message ID */
 	uint16_t length; /**< Number of bytes in the payload */
 };
 
+/** 16-bit checksum */
 typedef struct ublox_footer ublox_checksum_t;
+
+/**
+ * Concludes a frame.
+ * Present at the end of every ublox message
+ */
 struct ublox_footer
 {
 	uint8_t a; /**< CK_A */
@@ -40,6 +51,8 @@ struct ublox_footer
 /**
  * Message Class IDs.
  * A class is a grouping of messages which are related to each other.
+ *
+ * Those are the possible values of @ref ublox_header::class
  */
 DECLARE_ENUM_WITH_VALUES(ublox_class,
 	(NAV /**< Navigation Results Messages              */, 0x01),
@@ -55,8 +68,12 @@ DECLARE_ENUM_WITH_VALUES(ublox_class,
 	(SEC /**< Security Feature Messages                */, 0x27)
 );
 
+/**
+ * Possible values of @ref ublox_navigation_data::constellation
+ */
 DECLARE_ENUM_WITH_VALUES(ublox_constellation,
 	(GPS     /**< Global Positioning System, from the US          */, 0),
+	(SBAS    /**< Satellite-based augmentation systems            */, 1),
 	(Galileo /**< From Europe                                     */, 2),
 	(BeiDou  /**< BeiDou Navigation Satellite System, from China  */, 3),
 	(QZSS    /**< Quasi-Zenith Satellite System, from Japan       */, 5),
@@ -80,15 +97,8 @@ struct ublox_navigation_data
 	uint8_t             constellation; /**< GNSS identifier */
 	uint8_t             satellite;     /**< Satellite identifier */
 	uint8_t             _reserved1;
-	/**
-	 * Only used for GLONASS.
-	 * This is the frequency slot + 7 (range from 0 to 13)
-	 */
-	uint8_t             glonass_frequency;
-	/**
-	 * The number of data words contained in this message.
-	 * (up to 10, for currently supported signals)
-	 */
+	uint8_t             glonass_frequency; /**< Only used for GLONASS */
+	/** The number of data words contained in this message. */
 	uint8_t             word_count;
 	/** The tracking channel number the message was received on. */
 	uint8_t             channel;
@@ -99,33 +109,57 @@ struct ublox_navigation_data
 ublox_checksum_t ublox_compute_checksum(ublox_message_t* message, size_t size);
 
 /**
+@var ublox_header::class
+A class is a group of messages that are related to each other
+
+@var ublox_header::type
+Deﬁnes the message that is to follow
+
+@var ublox_header::length
+The length is deﬁned as being that of the payload only. It does not include
+the preamble, message class, message ID, length, or UBX checksum ﬁelds
+*/
+
+/**
+@var ublox_navigation_data::glonass_frequency
+This is the frequency slot + 7 (range from 0 to 13)
+
+@var ublox_navigation_data::word_count
+Up to 10 for currently supported signals
+*/
+
+/**
 @struct ublox_navigation_data
 
 @section integration More details from the Integration manual
 
 UBX-RXM-SFRBX reports the broadcast navigation data message the receiver has
-collected from each tracked signal. When enabled, a separate message is
-generated each time the receiver decodes a complete subframe of data from a
-tracked signal. The data bits are reported as received, including preambles and
-error checking bits as appropriate. However, because there is considerable
-variation in the data structure of the different GNSS signals, the form of the
-reported data also varies. This document uses the term "subframe", but other
-GNSS data structures might use different terms, for example, GLONASS uses
-"strings" and Galileo uses "pages".
+collected from each tracked signal.
+
+When enabled, a separate message is generated each time the receiver decodes a
+complete subframe of data from a tracked signal. The data bits are reported as
+received, including preambles and error checking bits as appropriate. However,
+because there is considerable variation in the data structure of the different
+GNSS signals, the form of the reported data also varies.
+
+This document uses the term "subframe", but other GNSS data structures might use
+different terms, for example, GLONASS uses "strings" and Galileo uses "pages".
 
 @subsection sub1 Parsing navigation data subframes
 
 Each UBX-RXM-SFRBX message contains a subframe of data bits appropriate for the
-relevant GNSS, delivered in a number of 32-bit words, as indicated by numWords
-field. Due to the variation in data structure between different GNSS, the most
-important step in parsing a UBX-RXM-SFRBX message is to identify the form of the
-data. This should be done by reading the gnssId field, which indicates which
-GNSS the data was decoded from. In almost all cases, this is sufficient to
-indicate the structure. Because of this, the following sections are organized by
-GNSS. However, in some cases the identity of the GNSS is not sufficient, and
-this is described, where appropriate, in the following sections. In most cases,
-the data does not map perfectly into a number of 32-bit words and, consequently,
-some of the words reported in UBX-RXM-SFRBX messages contain fields marked as
-"Pad". These fields should be ignored and no assumption should be made about
-their contents.
+relevant GNSS, delivered in a number of 32-bit words, as indicated by @ref
+word_count field.
+
+Due to the variation in data structure between different GNSS, the most important
+step in parsing a UBX-RXM-SFRBX message is to identify the form of the data. This
+should be done by reading the @ref constellation field, which indicates which GNSS
+the data was decoded from. In almost all cases, this is sufficient to indicate
+the structure. Because of this, the following sections are organized by GNSS.
+
+However, in some cases the identity of the GNSS is not sufficient, and this is
+described, where appropriate, in the following sections. In most cases, the data
+does not map perfectly into a number of 32-bit words and, consequently, some of
+the words reported in UBX-RXM-SFRBX messages contain fields marked as "Pad". These
+fields should be ignored and no assumption should be made about their contents.
 */

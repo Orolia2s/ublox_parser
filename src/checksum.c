@@ -3,6 +3,9 @@
 /**
  * This checksum algorithm is the 8-bit Fletcher Algorithm,
  * which is used in the TCP standard.
+ *
+ * The checksum is calculated over the message, starting and including the class
+ * ﬁeld up until, but excluding, the checksum ﬁelds.
  */
 ublox_checksum_t ublox_compute_checksum(ublox_message_t* message, size_t size)
 {
