@@ -66,9 +66,10 @@ info: ## Print the project's name, version, copyright notice and author
 ##@ Setup
 
 download: ## Download dependencies, needs to be run only once
-	$(shell cd /tmp ; \
-		git clone "https://github.com/agagniere/Libft.git" ;\
-		conan export Libft ;\
+	( \
+		cd /tmp ; \
+		git clone "https://github.com/agagniere/Libft.git" ; \
+		conan export Libft ; \
 		conan export Libft/test/framework \
 	)
 
