@@ -63,11 +63,7 @@ TEST_SECTION(serial_input_modes, extract_name, INPUT_condition,
 
 int test_serial()
 {
-	int success = 0;
-	int total   = 0;
-
-	total++; success += !test_serial_types();
-	total++; success += !test_serial_control_modes();
-	total++; success += !test_serial_input_modes();
-	return success != total;
+	return test_serial_types()
+		|| test_serial_control_modes()
+		|| test_serial_input_modes();
 }

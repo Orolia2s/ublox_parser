@@ -1,5 +1,12 @@
 ##
  # Simple Makefile
+ #
+ # Performs the minimal amount of steps required to generate a given file
+ #
+ # Features:
+ #  - Handles compilation and documentation
+ #  - Auto rebuild when headers are modified
+ #  - Self-documented
 ##
 
 NAME          := ublox_parser
@@ -19,10 +26,10 @@ CPPFLAGS += -I $(HEADER_FOLDER)
 CPPFLAGS += $(shell pkg-config --cflags-only-I *.pc)
 CPPFLAGS += -MMD
 
-LDFLAGS += -L .
-LDLIBS  += -l $(NAME)
-LDFLAGS += $(shell pkg-config --libs-only-L *.pc)
-LDLIBS  += $(shell pkg-config --libs-only-l *.pc)
+LDFLAGS  += -L .
+LDLIBS   += -l $(NAME)
+LDFLAGS  += $(shell pkg-config --libs-only-L *.pc)
+LDLIBS   += $(shell pkg-config --libs-only-l *.pc)
 
 SOURCES  := $(shell find src -name '*.c')
 OBJECTS  := $(SOURCES:.c=.o)
@@ -57,27 +64,11 @@ version: ## Display the project's version
 info: ## Print the project's name, version, copyright notice and author
 	@echo $(NAME) version $(VERSION)
 	@echo
-	@echo "Copyright (C) 2023 Orolia Systèmes et Solutions"
+	@echo "Copyright (C) 2023 Orolia Systemes et Solutions"
 	@echo
 	@echo Written by A. Gagniere
 
 .PHONY: default help raw_help version info
-
-##@ Setup
-
-download: ## Download dependencies, needs to be run only once
-	( \
-		cd /tmp ; \
-		git clone "https://github.com/agagniere/Libft.git" ; \
-		conan export Libft ; \
-		conan export Libft/test/framework \
-	)
-
-conan: ## Install dependencies
-	conan install . --build=missing
-	( cd $(TEST_FOLDER) && conan install . --build=missing )
-
-.PHONY: download conan
 
 ##@ Building
 
@@ -95,23 +86,25 @@ lib: $(LIBRARY) ## Compile the (static) library
 run: $(EXECUTABLE) ## Run the executable
 	./$<
 
-test: $(LIBRARY) ## Compile and run unit tests
-	$(MAKE) -C $@ && ./test/main
+test: $(LIBRARY) ## Build and run unit tests
+	$(MAKE) -C $@ run
 
 .PHONY: run test
 
 ##@ Documentation
 
-pdf: $(PDF) ## Open the pdf documentation
+doc: $(HTML) $(PDF) ## Generate all the documentation
+
+pdf: $(PDF) ## Generate and open the pdf documentation
 	xdg-open $< 2>/dev/null
 
-html: $(HTML) ## Open the documentation as a local site on the browser
+html: $(HTML) ## Generate and open the documentation as a local site on the browser
 	xdg-open $< 2>/dev/null
 
-man: $(MAN) ## Open the ublox.h man page
+man: $(MAN) ## Generate and open the ublox.h man page
 	man $<
 
-.PHONY: pdf html man
+.PHONY: doc pdf html man
 
 ##@ Cleaning
 

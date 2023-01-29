@@ -16,10 +16,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v4.5.0
     - name: Install and build dependencies
-      run: |
-        pip install --user conan
-        make download
-        make conan
+      run: ./setup.sh
     - name: Build
       run: make build
     - name: Test

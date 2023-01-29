@@ -2,6 +2,7 @@
 *~
 *.a
 *.d
+*.exe
 *info.json
 *info.txt
 *.lock
