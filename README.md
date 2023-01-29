@@ -5,36 +5,54 @@
 ```console
 $ make help
 
+This Makefile allows one to setup their machine, build, run and test this ublox parser.
+
 Usage:
   make <target>
 
-General
+General:
   default          When no target is specified, this help is displayed
   help             Display this help.
-  conan            Install dependencies
-  run              Run the executable
+  raw_help         Display the help without color
+  version          Display the project's version
+  info             Print the project's name, version, copyright notice and author
 
-Building
+Setup:
+  download         Download dependencies, needs to be run only once
+  conan            Install dependencies
+
+Building:
   build            Compile both the library and the executable
   fbuild           Re-build everything from zero
   lib              Compile the (static) library
 
-Testing
+Run:
+  run              Run the executable
   test             Compile and run unit tests
 
-Documentation
+Documentation:
   pdf              Open the pdf documentation
   html             Open the documentation as a local site on the browser
   man              Open the ublox.h man page
 
-Cleaning
+Cleaning:
   clean            Remove intermediate objects
   fclean           Remove all generated files
 ```
 
-## Get started
+## Getting started
 
-```console
+Setup your environment:
+
+```bash
+python -m pip install pip
+sudo pip install conan
+make download
 make conan
+```
+
+You can now build and run the code, try:
+
+```
 make test
 ```

@@ -2,8 +2,10 @@
  # Simple Makefile
 ##
 
-NAME          := ublox
-EXECUTABLE    := parse_$(NAME)
+NAME          := ublox_parser
+VERSION       := $(shell git tag --sort '-version:refname' --merged | head -1)
+
+EXECUTABLE    := $(NAME).exe
 LIBRARY       := lib$(NAME).a
 
 SOURCE_FOLDER := src
@@ -11,10 +13,14 @@ HEADER_FOLDER := include
 TEST_FOLDER   := test
 DOC_FOLDER    := doc
 
+CFLAGS   += -Wall -Wextra --std=c17
+
 CPPFLAGS += -I $(HEADER_FOLDER)
 CPPFLAGS += $(shell pkg-config --cflags-only-I *.pc)
 CPPFLAGS += -MMD
 
+LDFLAGS += -L .
+LDLIBS  += -l $(NAME)
 LDFLAGS += $(shell pkg-config --libs-only-L *.pc)
 LDLIBS  += $(shell pkg-config --libs-only-l *.pc)
 
@@ -29,6 +35,7 @@ LATEX := $(DOC_FOLDER)/latex
 
 # When rendering the help, pretty print certain words
 CYAN       := \033[36m
+YELLOW     := \033[33m
 BOLD       := \033[1m
 EOC        := \033[0m
 PP_COMMAND := $(CYAN)
@@ -39,14 +46,37 @@ PP_SECTION := $(BOLD)
 default: help ## When no target is specified, this help is displayed
 
 help: ## Display this help.
-	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make $(PP_COMMAND)<target>$(EOC)\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  $(PP_COMMAND)%-15s$(EOC) %s\n", $$1, $$2 } /^##@/ { printf "\n$(PP_SECTION)%s$(EOC)\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*##"; printf "\nThis Makefile allows one to setup their machine, build, run and test this ublox parser.\n\nUsage:\n  make $(PP_COMMAND)<target>$(EOC)\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  $(PP_COMMAND)%-15s$(EOC) %s\n", $$1, $$2 } /^##@/ { printf "\n$(PP_SECTION)%s$(EOC):\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+
+raw_help: ## Display the help without color
+	@$(MAKE) help --no-print-directory PP_COMMAND= PP_SECTION= EOC=
+
+version: ## Display the project's version
+	@echo $(VERSION)
+
+info: ## Print the project's name, version, copyright notice and author
+	@echo $(NAME) version $(VERSION)
+	@echo
+	@echo "Copyright (C) 2023 Orolia Systèmes et Solutions"
+	@echo
+	@echo Written by A. Gagniere
+
+.PHONY: default help raw_help version info
+
+##@ Setup
+
+download: ## Download dependencies, needs to be run only once
+	$(shell cd /tmp ; \
+		git clone "https://github.com/agagniere/Libft.git" ;\
+		conan export Libft ;\
+		conan export Libft/test/framework \
+	)
 
 conan: ## Install dependencies
 	conan install . --build=missing
 	( cd $(TEST_FOLDER) && conan install . --build=missing )
 
-run: $(EXECUTABLE) ## Run the executable
-	./$<
+.PHONY: download conan
 
 ##@ Building
 
@@ -57,10 +87,17 @@ fbuild: fclean ## Re-build everything from zero
 
 lib: $(LIBRARY) ## Compile the (static) library
 
-##@ Testing
+.PHONY: build fbuild lib
+
+##@ Run
+
+run: $(EXECUTABLE) ## Run the executable
+	./$<
 
 test: $(LIBRARY) ## Compile and run unit tests
 	$(MAKE) -C $@ && ./test/main
+
+.PHONY: run test
 
 ##@ Documentation
 
@@ -73,6 +110,8 @@ html: $(HTML) ## Open the documentation as a local site on the browser
 man: $(MAN) ## Open the ublox.h man page
 	man $<
 
+.PHONY: pdf html man
+
 ##@ Cleaning
 
 clean: ## Remove intermediate objects
@@ -82,13 +121,14 @@ fclean: clean ## Remove all generated files
 	$(RM) $(EXECUTABLE) $(LIBRARY)
 	$(RM) -r $(DOC_FOLDER)/latex $(DOC_FOLDER)/html $(DOC_FOLDER)/man
 
-.PHONY: help build fbuild lib test pdf html man clean fclean
+.PHONY: clean fclean
 
 # Non-phony rules
 
 include $(wildcard *.d src/*.d) # To know on which header each .o depends
 
-$(EXECUTABLE): $(MAIN_OBJ) $(OBJECTS) # For now rely on Make's implicit rules
+$(EXECUTABLE): $(MAIN_OBJ) $(LIBRARY) # Link the executable
+	$(CC) $(CFLAGS) $< $(LDFLAGS) $(LDLIBS) -o $@
 
 $(LIBRARY): $(OBJECTS) # Group all the compiled objects into an indexed archive
 	$(AR) rcs $@ $^
@@ -96,5 +136,6 @@ $(LIBRARY): $(OBJECTS) # Group all the compiled objects into an indexed archive
 $(PDF): $(LATEX)/Makefile # Generate the pdf doc
 	$(MAKE) -C $(@D)
 
-$(MAN) $(HTML) $(LATEX)/Makefile: $(SOURCES) $(wildcard include/*.h) README.md # Generate the doc
-	doxygen $(DOC_FOLDER)/Doxyfile
+# Generate the doc
+$(MAN) $(HTML) $(LATEX)/Makefile: $(DOC_FOLDER)/Doxyfile $(SOURCES) include/*.h README.md
+	PROJECT_VERSION=$(VERSION) doxygen $<
