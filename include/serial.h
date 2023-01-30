@@ -27,6 +27,7 @@ void          serial_close(serial_port_t* port);
 bool          serial_get_options(serial_port_t* port);
 
 bool          serial_make_raw(serial_port_t* port);
+int64_t       serial_extract_baudrate(uint32_t flag);
 
 void serial_print_input_modes(const struct serial_input_modes* modes);
 void serial_print_control_modes(const struct serial_control_modes* modes);

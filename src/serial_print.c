@@ -70,6 +70,9 @@ bool serial_print_config(serial_port_t* port)
 	serial_print_output_modes(&port->options.output);
 	serial_print_control_modes(&port->options.control);
 	serial_print_local_modes(&port->options.local);
+	printf("  baudrate:\n");
+	printf("    %-*s: %li\n", WIDTH, "input",  serial_extract_baudrate(port->options.input_speed));
+	printf("    %-*s: %li\n", WIDTH, "output", serial_extract_baudrate(port->options.output_speed));
 	printf("---\n");
 	return true;
 }
