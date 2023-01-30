@@ -7,6 +7,7 @@
 
 #include <termios.h>
 
+#include <stdbool.h>
 #include <stdint.h> // uint*_t
 
 /**
@@ -91,7 +92,11 @@ union serial_options
 	};
 };
 
-int ublox_open_serial_port(const char* port_name);
+int  ublox_open_serial_port(const char* port_name);
+
+void serial_print_input_modes(const struct serial_input_modes* modes);
+void serial_print_control_modes(const struct serial_control_modes* modes);
+bool serial_print_config(int port_fd);
 
 /** @struct serial_input_modes
 Documentation source:

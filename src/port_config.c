@@ -43,12 +43,6 @@ int ublox_open_serial_port(const char* port_name)
 		log_error("Unable to open \"%s\": %s\n", port_name, strerror(errno));
 		return -1;
 	}
-
-	tcgetattr(port, &options);
-
-	//ft_print_memory(&options, sizeof(options));
-	ft_print_memory(&options.c_iflag, sizeof(options.c_iflag));
-	ft_print_memory(&options.c_cflag, sizeof(options.c_cflag));
-
+	serial_print_config(port);
 	return port;
 }
