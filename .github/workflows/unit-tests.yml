@@ -25,7 +25,9 @@ jobs:
     - name: Test
       run: make test
     - name: Generate documentation
-      run: make doc
+      run: |
+        ./setup.sh --doc
+        make doc
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3
       with:

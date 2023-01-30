@@ -1,12 +1,22 @@
 OK="[\e[1;32mOK\e[0m]\n"
 KO="[\e[1;33mInstalling\e[0m]\n"
 
-printf "%-40s" "Checking for pip"
-if command -v pip >/dev/null 2>/dev/null
-then printf $OK
-else printf $KO
-	sudo apt install pip
-fi
+function check_program_installed()
+{
+	package=$1
+	if test -n $2
+	then package=$2
+	fi
+
+	printf "%-40s" "Checking for $1"
+	if command -v $1 >/dev/null 2>/dev/null
+	then printf $OK
+	else printf $KO
+		 sudo apt-get install -y $package
+	fi
+}
+
+check_program_installed pip
 
 printf "%-40s" "Checking for conan"
 if command -v conan >/dev/null 2>/dev/null
@@ -33,4 +43,10 @@ then printf $OK
 else printf $KO
 	conan install . --build=missing
 	( cd test && conan install . --build=missing )
+fi
+
+if test $1 = "--doc"
+then
+	check_program_installed doxygen doxygen-latex
+	check_program_installed help2man
 fi
