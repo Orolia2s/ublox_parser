@@ -34,10 +34,11 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
 	case ARGP_KEY_ARG:
 		if (arg)
 		{
+			Serial port = serial_open(arg);
 			if (arguments->is_passive)
-				serial_print_config(open(arg, O_RDONLY | O_NOCTTY));
+				serial_print_config(&port);
 			else
-				ublox_open_serial_port(arg);
+				ublox_port_config(&port);
 		}
 		return 0;
 	default: return ARGP_ERR_UNKNOWN;

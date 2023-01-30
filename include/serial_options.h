@@ -71,20 +71,26 @@ struct serial_control_modes
 
 /**
  * Verbose alternative to termios.c_lflag
+ *
+ * Flags that require canonical mode or that are not in POSIX
+ * are not documented in doxygen.
  */
 struct serial_local_modes
 {
-	uint32_t enable_signals :1;
-	uint32_t canonical      :1; /**< Enable canonical mode */
-	uint32_t uppercase_only :1; /* Not supported under Linux */
-	uint32_t echo           :1;	/**< Echo input characters. */
-	uint32_t echo_erasure   :1; /* requires canonical mode */
-	uint32_t echo_kill      :1; /* requires canonical mode */
-	uint32_t echo_nl        :1; /* requires canonical mode */
-	uint32_t disable_flush  :1;
+	/** Generate a signal when INTR, QUIT, SUSP, or DSUSP are received */
+	uint32_t enable_signals    :1;
+	uint32_t canonical         :1; /**< Enable canonical mode */
+	uint32_t _uppercase_only   :1; /* Not supported under Linux */
+	uint32_t echo              :1; /* Echo input characters. */
+	uint32_t echo_erasure      :1; /* requires canonical mode */
+	uint32_t echo_kill         :1; /* requires canonical mode */
+	uint32_t echo_nl           :1; /* requires canonical mode */
+	uint32_t disable_flush     :1;
 	/** Send SIGTOU to background jobs attempting to write to the terminal. */
-	uint32_t tostop         :1;
-	uint32_t echo_control   :1; /**< Escape control characters */
+	uint32_t tostop            :1;
+	uint32_t _echo_control     :1; /* Escape control characters */
+	uint32_t _misc             :5;
+	uint32_t enable_processing :1; /* implementation-defined input processing */
 };
 
 /**
@@ -270,6 +276,16 @@ otherwise even parity is used.
 */
 
 /**
-@var serial_local_modes::echo
-If this bit is set, echoing of input characters back to the terminal is enabled.
+@var serial_local_modes::enable_signals
+This bit controls whether the INTR, QUIT, and SUSP characters are recognized.
+The functions associated with these characters are performed if and only if this
+bit is set. Being in canonical or noncanonical input mode has no effect on the
+interpretation of these characters.
+
+You should use caution when disabling recognition of these characters. Programs
+that cannot be interrupted interactively are very user-unfriendly. If you clear
+this bit, your program should provide some alternate interface that allows the
+user to interactively send the signals associated with these characters, or to
+escape from the program.
+
 */

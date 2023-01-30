@@ -27,23 +27,11 @@
  *  - 230400
  *  - 460800
  *  - 921600
- *
- * @return
- *   - the opened port file descriptor
- *   - `-1` on error
  */
-int ublox_open_serial_port(const char* port_name)
+bool ublox_port_config(serial_port_t* port)
 {
-	int            port;
-
-	log_trace("%s(%s)\n", __PRETTY_FUNCTION__, port_name);
-	if ((port = open(port_name, O_RDONLY | O_NOCTTY)) < 0)
-	{
-		log_error("Unable to open \"%s\": %s\n", port_name, strerror(errno));
-		return -1;
-	}
 	serial_print_config(port);
 	serial_make_raw(port);
 	serial_print_config(port);
-	return port;
+	return true;
 }
