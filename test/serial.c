@@ -12,7 +12,9 @@
 
 TEST_SECTION(serial_types, extract_name, TYPE_condition,
 	(serial_control_modes, sizeof(tcflag_t)),
-	(serial_input_modes,   sizeof(tcflag_t))
+	(serial_output_modes,  sizeof(tcflag_t)),
+	(serial_input_modes,   sizeof(tcflag_t)),
+	(serial_local_modes,   sizeof(tcflag_t))
 );
 
 
@@ -60,10 +62,25 @@ TEST_SECTION(serial_input_modes, extract_name, INPUT_condition,
 	(is_utf8,                IUTF8)
 );
 
+#define LOCAL_condition(NAME, EXPECTED_VALUE)	           \
+	({                                                     \
+		struct serial_local_modes v = {. NAME = true};     \
+		*(tcflag_t*)&v == EXPECTED_VALUE;                  \
+	})
+
+TEST_SECTION(serial_local_modes, extract_name, LOCAL_condition,
+	(enable_signals,    ISIG),
+	(canonical,         ICANON),
+	(echo,              ECHO),
+	(echo_erasure,      ECHOE),
+	(echo_kill,         ECHOK),
+	(enable_processing, IEXTEN)
+);
 
 int test_serial()
 {
 	return test_serial_types()
 		|| test_serial_control_modes()
-		|| test_serial_input_modes();
+		|| test_serial_input_modes()
+		|| test_serial_local_modes();
 }

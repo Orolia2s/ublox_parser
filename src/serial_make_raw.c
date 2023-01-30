@@ -4,7 +4,6 @@
 #include <termios.h>
 
 #include <errno.h>
-#include <stdbool.h>
 #include <string.h> // strerror
 #include <unistd.h>
 
@@ -15,34 +14,31 @@
  * driver: input is available character by character, echoing is disabled, and
  * all special processing of terminal input and output characters is disabled.
  */
-bool serial_make_raw(int port_fd)
+bool serial_make_raw(serial_port_t* port)
 {
-	serial_options_t options;
+	serial_ensure_options(port);
 
-	if (tcgetattr(port_fd, &options.termios) != 0)
-	{
-		log_error("Unable to get the attributes of the terminal: %s", strerror(errno));
-		return false;
-	}
+	cfmakeraw(&port->options.termios);
 
-	// cfmakeraw(&options.termios);
+	/*
+	port->options.input.ignore_break          = false;
+	port->options.input.signal_break          = false;
+	port->options.input.mark_errors           = false;
+	port->options.input.strip_8th_bit         = false;
+	port->options.input.map_nl_to_cr          = false;
+	port->options.input.ignore_cr             = false;
+	port->options.input.map_cr_to_nl          = false;
+	port->options.input.enable_start_stop_out = false;
 
-	options.input.ignore_break          = false;
-	options.input.signal_break          = false;
-	options.input.mark_errors           = false;
-	options.input.strip_8th_bit         = false;
-	options.input.map_nl_to_cr          = false;
-	options.input.ignore_cr             = false;
-	options.input.map_cr_to_nl          = false;
-	options.input.enable_start_stop_out = false;
+	port->options.control.character_size = character_size_8;
+	port->options.control.enable_parity  = false;
+	*/
 
-	options.control.character_size = character_size_8;
-	options.control.enable_parity  = false;
-
-	if (tcsetattr(port_fd, TCSANOW, &options.termios) != 0)
+	if (tcsetattr(port->file_descriptor, TCSANOW, &port->options.termios) != 0)
 	{
 		log_error("Unable to set the attributes of the terminal: %s", strerror(errno));
 		return false;
 	}
+	port->got_options = false;
 	return true;
 }
