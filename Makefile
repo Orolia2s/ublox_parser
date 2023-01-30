@@ -25,6 +25,7 @@ CFLAGS   += -Wall -Wextra --std=c17
 CPPFLAGS += -I $(HEADER_FOLDER)
 CPPFLAGS += $(shell pkg-config --cflags-only-I *.pc)
 CPPFLAGS += -MMD
+CPPFLAGS += -DVERSION="$(VERSION)"
 
 LDFLAGS  += -L .
 LDLIBS   += -l $(NAME)

@@ -1,21 +1,52 @@
-#include "ublox.h"
 #include "serial.h"
+#include "ublox.h"
 
+#include <argp.h>
+#include <ft_prepro/tools.h>
 #include <ft_printf.h>
 #include <termios.h>
 
-int main()
+#include <stdbool.h>
+#include <stdio.h>
+
+const char*  argp_program_version     = "ublox_parser " PP_STR(VERSION);
+const char*  argp_program_bug_address = "<antoine.gagniere@orolia2s.com>";
+static char  doc[] = "Prints serial port configuration and ublox messages.";
+static char  args_doc[] = "[PATH]";
+
+static struct argp_option options[] = {
+	{"passive", 'p', 0, OPTION_ARG_OPTIONAL, "Do not change the port configuration, only display it.", 1},
+	{ 0 }
+};
+
+struct arguments
 {
-	ft_printf("u-blox classes :\n");
-	enum ublox_class class = -1;
-	while (has_next_ublox_class(&class))
-		ft_printf(" - %s\n", ublox_class_strings[class]);
+	bool is_passive;
+};
 
-	ft_printf("\nGNSS Constellations:\n");
-	enum ublox_constellation gnss = -1;
-	while (has_next_ublox_constellation(&gnss))
-		ft_printf(" - %s\n", ublox_constellation_strings[gnss]);
+static error_t parse_opt(int key, char* arg, struct argp_state* state)
+{
+	struct arguments* arguments = state->input;
+	switch (key)
+	{
+	case 'p': arguments->is_passive = true; break;
+	case ARGP_KEY_ARG:
+		if (arg)
+			ublox_open_serial_port(arg);
+		return 0;
+	default: return ARGP_ERR_UNKNOWN;
+	}
+	return 0;
+}
 
-	int fd = ublox_open_serial_port("/dev/ttyS5");
-	ft_printf("%i\n", fd);
+static struct argp argp = { options, parse_opt, args_doc, doc, 0, 0, 0 };
+
+
+
+int main(int ac, char** av)
+{
+	struct arguments arguments = { .is_passive = false };
+
+	argp_parse(&argp, ac, av, 0, 0, &arguments);
+	return 0;
 }
