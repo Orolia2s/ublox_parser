@@ -30,6 +30,7 @@ CPPFLAGS += $(shell pkg-config --cflags-only-I *.pc)
 CPPFLAGS += -MMD
 CPPFLAGS += -DVERSION="$(VERSION)"
 CPPFLAGS += -DLOG_USE_COLOR
+CPPFLAGS += -D_DEFAULT_SOURCE
 
 LDFLAGS  += -L .
 LDLIBS   += -l $(NAME)

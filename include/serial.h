@@ -93,6 +93,7 @@ union serial_options
 };
 
 int  ublox_open_serial_port(const char* port_name);
+bool serial_make_raw(int port_fd);
 
 void serial_print_input_modes(const struct serial_input_modes* modes);
 void serial_print_control_modes(const struct serial_control_modes* modes);

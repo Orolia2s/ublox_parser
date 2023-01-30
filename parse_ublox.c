@@ -2,6 +2,7 @@
 #include "ublox.h"
 
 #include <argp.h>
+#include <fcntl.h>
 #include <ft_prepro/tools.h>
 #include <ft_printf.h>
 #include <termios.h>
@@ -32,7 +33,12 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
 	case 'p': arguments->is_passive = true; break;
 	case ARGP_KEY_ARG:
 		if (arg)
-			ublox_open_serial_port(arg);
+		{
+			if (arguments->is_passive)
+				serial_print_config(open(arg, O_RDONLY | O_NOCTTY));
+			else
+				ublox_open_serial_port(arg);
+		}
 		return 0;
 	default: return ARGP_ERR_UNKNOWN;
 	}

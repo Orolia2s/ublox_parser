@@ -27,6 +27,6 @@ clean:
 	$(RM) $(OBJECTS) $(OBJECTS:.o=.d)
 
 fclean: clean
-	$(RM) main
+	$(RM) $(EXECUTABLE)
 
 include $(wildcard *.d)

@@ -34,7 +34,6 @@
  */
 int ublox_open_serial_port(const char* port_name)
 {
-	struct termios options;
 	int            port;
 
 	log_trace("%s(%s)\n", __PRETTY_FUNCTION__, port_name);
@@ -43,6 +42,8 @@ int ublox_open_serial_port(const char* port_name)
 		log_error("Unable to open \"%s\": %s\n", port_name, strerror(errno));
 		return -1;
 	}
+	serial_print_config(port);
+	serial_make_raw(port);
 	serial_print_config(port);
 	return port;
 }
