@@ -5,7 +5,6 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-  workflow_dispatch: {}
 
 jobs:
   build:
@@ -24,13 +23,3 @@ jobs:
       run: make build
     - name: Test
       run: make test
-    - name: Generate documentation
-      run: |
-        ./setup.sh --doc
-        make doc
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: ublox_parser_reference
-        path: doc/latex/refman.pdf
-        retention-days: 5
