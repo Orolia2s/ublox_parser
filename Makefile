@@ -6,6 +6,7 @@
  # Features:
  #  - Handles compilation and documentation
  #  - Auto rebuild when headers are modified
+ #  - Store intermediate objects in a separate folder
  #  - Self-documented
 ##
 
@@ -19,7 +20,9 @@ SOURCE_FOLDER := src
 HEADER_FOLDER := include
 TEST_FOLDER   := test
 DOC_FOLDER    := doc
+CACHE_FOLDER  := cache
 
+CFLAGS   += -g -O2
 CFLAGS   += -Wall -Wextra --std=c17
 
 CPPFLAGS += -I $(HEADER_FOLDER)
@@ -32,9 +35,9 @@ LDLIBS   += -l $(NAME)
 LDFLAGS  += $(shell pkg-config --libs-only-L *.pc)
 LDLIBS   += $(shell pkg-config --libs-only-l *.pc)
 
-SOURCES  := $(shell find src -name '*.c')
-OBJECTS  := $(SOURCES:.c=.o)
-MAIN_OBJ := parse_ublox.o
+SOURCES  := $(shell find $(SOURCE_FOLDER) -name '*.c')
+OBJECTS  := $(SOURCES:$(SOURCE_FOLDER)/%.c=$(CACHE_FOLDER)/%.o)
+MAIN_OBJ := $(CACHE_FOLDER)/parse_ublox.o
 
 PDF   := $(DOC_FOLDER)/latex/refman.pdf
 HTML  := $(DOC_FOLDER)/html/index.html
@@ -110,7 +113,7 @@ man: $(MAN) ## Generate and open the ublox.h man page
 ##@ Cleaning
 
 clean: ## Remove intermediate objects
-	$(RM) $(OBJECTS) $(OBJECTS:.o=.d) $(MAIN_OBJ) $(MAIN_OBJ:.o=.d)
+	$(RM) -r $(CACHE_FOLDER)
 
 fclean: clean ## Remove all generated files
 	$(RM) $(EXECUTABLE) $(LIBRARY)
@@ -120,10 +123,19 @@ fclean: clean ## Remove all generated files
 
 # Non-phony rules
 
-include $(wildcard *.d src/*.d) # To know on which header each .o depends
+include $(wildcard $(OBJECTS:.o=.d)) # To know on which header each .o depends
+
+$(CACHE_FOLDER): # Create the cache folder
+	mkdir $@
 
 $(EXECUTABLE): $(MAIN_OBJ) $(LIBRARY) # Link the executable
 	$(CC) $(CFLAGS) $< $(LDFLAGS) $(LDLIBS) -o $@
+
+$(OBJECTS): $(CACHE_FOLDER)/%.o: $(SOURCE_FOLDER)/%.c # declare the dependency between objects in cache and sources in src.
+$(MAIN_OBJ): $(CACHE_FOLDER)/%.o: %.c # declare the dependency of the object containing the main
+
+$(OBJECTS) $(MAIN_OBJ): | $(CACHE_FOLDER) libft.pc # Compile a single object
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 $(LIBRARY): $(OBJECTS) # Group all the compiled objects into an indexed archive
 	$(AR) rcs $@ $^
@@ -134,3 +146,6 @@ $(PDF): $(LATEX)/Makefile # Generate the pdf doc
 # Generate the doc
 $(MAN) $(HTML) $(LATEX)/Makefile: $(DOC_FOLDER)/Doxyfile $(SOURCES) include/*.h README.md
 	PROJECT_VERSION=$(VERSION) doxygen $<
+
+%.pc: # Warm about missing pkg-config file
+	@$(error Run ./setup.sh first !)
