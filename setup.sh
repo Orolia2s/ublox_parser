@@ -45,7 +45,7 @@ else printf $KO
 	( cd test && conan install . --build=missing )
 fi
 
-if test $1 = "--doc"
+if test "$1" = "--doc"
 then
 	check_program_installed doxygen doxygen-latex
 	check_program_installed help2man

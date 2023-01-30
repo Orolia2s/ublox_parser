@@ -1,12 +1,13 @@
 #include "serial.h"
 #include "ublox.h"
 
-#include <fcntl.h>
-#include <ft_printf.h>
-#include <libft.h>
-#include <termios.h>
+#include <fcntl.h> // open
+#include <libft.h> // print_memory
+#include <log.h>
+#include <termios.h> // tcgetattr
 
-#include <unistd.h>
+#include <errno.h>
+#include <string.h> // strerror
 
 /**
  * Congigure a serial port to receive messages from the u-blox receiver.
@@ -36,8 +37,12 @@ int ublox_open_serial_port(const char* port_name)
 	struct termios options;
 	int            port;
 
-	if ((port = open(port_name, O_RDWR | O_NOCTTY)) < 0)
+	log_trace("%s(%s)\n", __PRETTY_FUNCTION__, port_name);
+	if ((port = open(port_name, O_RDONLY | O_NOCTTY)) < 0)
+	{
+		log_error("Unable to open \"%s\": %s\n", port_name, strerror(errno));
 		return -1;
+	}
 
 	tcgetattr(port, &options);
 

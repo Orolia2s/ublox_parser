@@ -29,6 +29,7 @@ CPPFLAGS += -I $(HEADER_FOLDER)
 CPPFLAGS += $(shell pkg-config --cflags-only-I *.pc)
 CPPFLAGS += -MMD
 CPPFLAGS += -DVERSION="$(VERSION)"
+CPPFLAGS += -DLOG_USE_COLOR
 
 LDFLAGS  += -L .
 LDLIBS   += -l $(NAME)
@@ -88,7 +89,7 @@ lib: $(LIBRARY) ## Compile the (static) library
 ##@ Run
 
 run: $(EXECUTABLE) ## Run the executable
-	./$<
+	sudo ./$< /dev/ttyACM0
 
 test: $(LIBRARY) ## Build and run unit tests
 	$(MAKE) -C $@ run
