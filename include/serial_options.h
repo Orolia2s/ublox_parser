@@ -1,8 +1,8 @@
 #pragma once
 
 /**
- * @file serial.h
- * Manipulate a serial port connection
+ * @file serial_options.h
+ * Verbose alternative to the termios structure
  */
 
 #include <termios.h>
@@ -37,6 +37,16 @@ struct serial_input_modes
 };
 
 /**
+ * Verbose alternative to termios.c_oflag
+ */
+struct serial_output_modes
+{
+	uint32_t enable_post_process :1;
+	/** Map lowercase characters to lowercase on output */
+	uint32_t map_lower_to_upper  :1;
+};
+
+/**
  * Verbose alternative to termios.c_cflag
  *
  * This structures stores the terminal flags and fields that control parameters
@@ -57,6 +67,24 @@ struct serial_control_modes
 	/** Lower modem control lines after last process closes the device (hang up). */
 	uint32_t hang_up        :1;
 	uint32_t is_local       :1; /**< Ignore modem control lines */
+};
+
+/**
+ * Verbose alternative to termios.c_lflag
+ */
+struct serial_local_modes
+{
+	uint32_t enable_signals :1;
+	uint32_t canonical      :1; /**< Enable canonical mode */
+	uint32_t uppercase_only :1; /* Not supported under Linux */
+	uint32_t echo           :1;	/**< Echo input characters. */
+	uint32_t echo_erasure   :1; /* requires canonical mode */
+	uint32_t echo_kill      :1; /* requires canonical mode */
+	uint32_t echo_nl        :1; /* requires canonical mode */
+	uint32_t disable_flush  :1;
+	/** Send SIGTOU to background jobs attempting to write to the terminal. */
+	uint32_t tostop         :1;
+	uint32_t echo_control   :1; /**< Escape control characters */
 };
 
 /**
@@ -83,21 +111,15 @@ typedef union serial_options serial_options_t;
  */
 union serial_options
 {
-	struct termios termios;
+	struct termios termios; /**< Standard structure */
 	struct
 	{
 		struct serial_input_modes   input;
-		struct serial_control_modes output;
+		struct serial_output_modes  output;
 		struct serial_control_modes control;
+		struct serial_local_modes   local;
 	};
 };
-
-int  ublox_open_serial_port(const char* port_name);
-bool serial_make_raw(int port_fd);
-
-void serial_print_input_modes(const struct serial_input_modes* modes);
-void serial_print_control_modes(const struct serial_control_modes* modes);
-bool serial_print_config(int port_fd);
 
 /** @struct serial_input_modes
 Documentation source:
@@ -245,4 +267,9 @@ and input characters are not checked for correct parity.
 This bit is only useful if @ref enable_parity is set.
 If @ref odd_parity is set, odd parity is used,
 otherwise even parity is used.
+*/
+
+/**
+@var serial_local_modes::echo
+If this bit is set, echoing of input characters back to the terminal is enabled.
 */
