@@ -124,6 +124,10 @@ union serial_options
 		struct serial_output_modes  output;
 		struct serial_control_modes control;
 		struct serial_local_modes   local;
+		uint8_t                     line_discipline;
+		uint8_t                     control_characters[32];
+		uint32_t                    input_speed;
+		uint32_t                    output_speed;
 	};
 };
 

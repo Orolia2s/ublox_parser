@@ -1,6 +1,7 @@
 [requires]
 libft/2.6
 libunit/1.3
+log.c/cci.20200620
 
 [generators]
 PkgConfigDeps
