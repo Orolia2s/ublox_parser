@@ -18,9 +18,7 @@
 bool serial_make_raw(serial_port_t* port)
 {
 	serial_ensure_options(port);
-
 	cfmakeraw(&port->options.termios);
-
 	/*
 	port->options.input.ignore_break          = false;
 	port->options.input.signal_break          = false;

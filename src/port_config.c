@@ -18,15 +18,7 @@
  *  - Stop bits: 1
  *  - Baud rate: 38400
  *
- * The baud rate can be set to other values:
- *  - 9600
- *  - 19200
- *  - 38400
- *  - 57600
- *  - 115200
- *  - 230400
- *  - 460800
- *  - 921600
+ * The baud rate can be set to other powers of 2 times of 9600, up to 921600
  */
 bool ublox_port_config(serial_port_t* port)
 {

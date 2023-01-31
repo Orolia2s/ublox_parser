@@ -23,7 +23,7 @@
 	map_upper_to_lower, enable_start_stop_out, any_can_restart_output, \
 	enable_start_stop_in, ring_bell_when_full, is_utf8
 
-#define OUTPUT_BOOLS enable_post_process, map_lower_to_upper
+#define OUTPUT_BOOLS enable_processing, map_lower_to_upper
 
 #define CONTROL_BOOLS \
 	two_stop_bits, read, enable_parity, odd_parity, hang_up, is_local
