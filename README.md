@@ -1,5 +1,16 @@
 # u-blox Messages Parser
 
+## Features
+
+### As an executable
+
+ - Display the current serial port configuration in the YAML format
+
+### As a C library
+
+ - Verbose alternatives to termios
+ - Extensive documentation
+
 ## Build
 
 ```console
@@ -49,4 +60,20 @@ You can now build and run the code, try:
 
 ```
 make test
+```
+
+## Usage
+
+```console
+$ ./ublox_parser.exe --help
+Usage: ublox_parser.exe [OPTION...] [PATH]
+Prints serial port configuration and ublox messages.
+
+  -p, --passive              Do not change the port configuration, only display
+                             it.
+  -?, --help                 Give this help list
+      --usage                Give a short usage message
+  -V, --version              Print program version
+
+Report bugs to <antoine.gagniere@orolia2s.com>.
 ```

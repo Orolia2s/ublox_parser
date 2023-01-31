@@ -82,8 +82,6 @@ DECLARE_ENUM_WITH_VALUES(ublox_constellation,
 
 // clang-format on
 
-typedef struct ublox_navigation_data ubx_rxm_sfrbx;
-
 /**
  * Broadcast Navigation Data Subframe.
  *
