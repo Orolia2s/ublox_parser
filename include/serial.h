@@ -7,6 +7,10 @@
 
 #include "serial_options.h"
 
+#include <ft_deque.h>
+
+#include <sys/types.h> // ssize_t
+
 #include <stdbool.h>
 #include <stdint.h> // uint*_t
 
@@ -18,8 +22,9 @@ typedef struct serial_port serial_port_t;
  */
 struct serial_port
 {
-	int              file_descriptor; /**< Underlying file */
 	serial_options_t options;         /**< Terminal options */
+	t_deque          buffer;          /**< Circular buffer */
+	int              file_descriptor; /**< Underlying file */
 	uint8_t          opened      :1;  /**< Is this file still open ? */
 	uint8_t          got_options :1;  /**< Is @ref options filled ? */
 };
@@ -33,6 +38,9 @@ int64_t       serial_decode_baudrate(speed_t flag);
 speed_t       serial_encode_baudrate(int64_t speed_in_bps);
 
 bool          serial_print_config(serial_port_t* port);
+
+ssize_t       serial_single_read(serial_port_t* port);
+bool          serial_accumulate(serial_port_t* port, size_t n);
 
 /**
  * Use the RAII with serial ports.
@@ -57,3 +65,9 @@ bool          serial_print_config(serial_port_t* port);
  */
 #define serial_ensure_options(PORT) \
 	do { if (!(PORT)->got_options) serial_get_options(PORT); } while (0)
+
+/**
+@var serial_port::buffer
+Good complexity for push_bash and pop_front.
+No need to memmove remaining data to the front.
+*/

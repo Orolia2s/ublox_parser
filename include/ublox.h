@@ -7,13 +7,16 @@
  * This code assumes a Little Endian host.
  */
 
+#include "serial.h"
+
 #include <ft_prepro/enum.h>
 
 #include <sys/types.h> // size_t
 
 #include <stdint.h> // uint*_t
 
-extern const uint8_t sync_chars[2];
+extern const uint8_t ublox_sync_chars[2];
+extern const size_t  ublox_smallest_message_size;
 
 /**
  * All ublox messages inherit from that type.
@@ -103,6 +106,10 @@ struct ublox_navigation_data
 	uint8_t             version; /**< Message version (=2 for this version) */
 	uint8_t             _reserved2;
 };
+
+bool             ublox_port_config(serial_port_t* port);
+
+ublox_message_t* ublox_next_message(serial_port_t* port);
 
 ublox_checksum_t ublox_compute_checksum(ublox_message_t* message, size_t size);
 

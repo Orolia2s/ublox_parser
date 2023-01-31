@@ -23,8 +23,7 @@
 bool ublox_port_config(serial_port_t* port)
 {
 	serial_print_config(port);
-	port->options.input_speed = B115200;
-	port->options.output_speed = B115200;
+	cfsetspeed(&port->options.termios, B115200);
 	serial_make_raw(port);
 	serial_print_config(port);
 	return true;

@@ -6,15 +6,19 @@
 
 #include <errno.h>
 #include <stdbool.h>
+#include <stdlib.h> // malloc
 #include <string.h> // strerror
 #include <unistd.h> // close
 
+#define BUFFER_SIZE 2048 // TODO: configure in a better way
+
 /**
- * Open the port in read-only.
+ * Open the port in read-only, and allocate the buffer.
  */
 serial_port_t serial_open(const char* port_name)
 {
 	serial_port_t port = {.file_descriptor = -1, .opened = false, .got_options = false};
+	void*         buffer;
 
 	log_trace("%s(%s)", __PRETTY_FUNCTION__, port_name);
 	if ((port.file_descriptor = open(port_name, O_RDONLY | O_NOCTTY)) < 0)
@@ -24,6 +28,10 @@ serial_port_t serial_open(const char* port_name)
 	}
 	port.opened = true;
 	serial_get_options(&port);
+	if ((buffer = malloc(BUFFER_SIZE)) == NULL)
+		log_error("malloc failed: %s", strerror(errno));
+	port.buffer = ftq_new(buffer, sizeof(char), BUFFER_SIZE);
+	ftq_intent(&port.buffer, 'B'); // Will only push back
 	return port;
 }
 
@@ -51,6 +59,12 @@ bool serial_get_options(serial_port_t* port)
 void serial_close(serial_port_t* port)
 {
 	log_trace("%s(%i)", __PRETTY_FUNCTION__, port->file_descriptor);
+	if (port->buffer.data)
+	{
+		free(port->buffer.data);
+		port->buffer.data = NULL;
+		port->buffer.capacity = 0;
+	}
 	if (!port->opened)
 	{
 		log_error("Attempting to close a port that isn't open.");
