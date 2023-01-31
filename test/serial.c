@@ -1,5 +1,7 @@
 #include "serial.h"
 
+#include <ft_prepro/color.h>
+#include <ft_printf.h>
 #include <libunit.h>
 #include <termios.h>
 
@@ -7,14 +9,17 @@
 
 // clang-format off
 
-#define TYPE_condition(TYPE, EXPECTED_VALUE) \
-	sizeof(struct TYPE) == EXPECTED_VALUE
+#define TYPE_condition(NAME, TYPE, EXPECTED) \
+	sizeof(TYPE) == sizeof(EXPECTED)
 
 TEST_SECTION(serial_types, extract_name, TYPE_condition,
-	(serial_control_modes, sizeof(tcflag_t)),
-	(serial_output_modes,  sizeof(tcflag_t)),
-	(serial_input_modes,   sizeof(tcflag_t)),
-	(serial_local_modes,   sizeof(tcflag_t))
+	(serial_control_modes, struct serial_control_modes, tcflag_t),
+	(serial_output_modes,  struct serial_output_modes,  tcflag_t),
+	(serial_input_modes,   struct serial_input_modes,   tcflag_t),
+	(serial_local_modes,   struct serial_local_modes,   tcflag_t),
+	(serial_options,       union serial_options,  struct termios),
+	(control_character,    uint8_t,                         cc_t),
+	(speed,                uint32_t,                     speed_t)
 );
 
 
@@ -69,18 +74,47 @@ TEST_SECTION(serial_input_modes, extract_name, INPUT_condition,
 	})
 
 TEST_SECTION(serial_local_modes, extract_name, LOCAL_condition,
-	(enable_signals,    ISIG),
+	(enable_signals,      ISIG),
 	(canonical,         ICANON),
-	(echo,              ECHO),
-	(echo_erasure,      ECHOE),
-	(echo_kill,         ECHOK),
+	(echo,                ECHO),
+	(echo_erasure,       ECHOE),
+	(echo_kill,          ECHOK),
 	(enable_processing, IEXTEN)
 );
 
+#define OUTPUT_condition(NAME, EXPECTED_VALUE)	           \
+	({                                                     \
+		struct serial_output_modes v = {. NAME = true};     \
+		*(tcflag_t*)&v == EXPECTED_VALUE;                  \
+	})
+
+TEST_SECTION(serial_output_modes, extract_name, OUTPUT_condition,
+	(enable_processing,  OPOST),
+	(map_lower_to_upper, OLCUC),
+	(map_nl_to_crnl,     ONLCR),
+	(map_cr_to_nl,       OCRNL),
+	(no_cr,              ONOCR),
+	(nl_returns,         ONLRET),
+	(use_fill,           OFILL),
+	(fill_is_del,        OFDEL),
+	(vertical_tab_delay, VTDLY)
+);
+
+void print_end(int*)
+{
+	ft_printf("} %s// Section serial%s\n\n",
+	          COLOR(BLUE), COLOR(NORMAL));
+}
+
 int test_serial()
 {
+	int __attribute__((cleanup(print_end))) a =
+		ft_printf("%sEntering section serial%s {\n\n",
+		          COLOR(BOLD, BLUE), COLOR(NORMAL));
+
 	return test_serial_types()
 		|| test_serial_control_modes()
 		|| test_serial_input_modes()
-		|| test_serial_local_modes();
+		|| test_serial_local_modes()
+		|| test_serial_output_modes();
 }

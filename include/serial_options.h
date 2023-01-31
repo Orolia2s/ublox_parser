@@ -11,7 +11,8 @@
 #include <stdint.h> // uint*_t
 
 /**
- * Verbose alternative to termios.c_iflag.
+ * Verbose alternative to termios.c_iflag
+ *
  * This section describes the terminal attribute flags that control fairly
  * low-level aspects of input processing: handling of parity errors, break
  * signals, flow control, and `RET` and `LFD` characters.
@@ -41,9 +42,21 @@ struct serial_input_modes
  */
 struct serial_output_modes
 {
-	uint32_t enable_post_process :1;
+	uint32_t enable_processing   :1; /**< Post-process output */
 	/** Map lowercase characters to lowercase on output */
 	uint32_t map_lower_to_upper  :1;
+	uint32_t map_nl_to_crnl      :1; /**< Map `\n` to `\r\n` on output */
+	uint32_t map_cr_to_nl        :1; /**< Map `\r` to `\n` on output */
+	uint32_t no_cr               :1; /**< No `\r` output at colum 0*/
+	uint32_t nl_returns          :1; /**< `\n` performs `\r` function */
+	uint32_t use_fill            :1; /**< Use fill characters for delay */
+	uint32_t fill_is_del         :1; /**< Fill is `DEL` */
+	uint32_t _nl_delay           :1;
+	uint32_t _cr_delay           :2;
+	uint32_t _tab_delay          :2;
+	uint32_t _backspace_delay    :1;
+	uint32_t vertical_tab_delay  :1;
+	uint32_t _formfeed_delay     :1;
 };
 
 /**
@@ -109,7 +122,7 @@ enum character_size
 	character_size_8 = 3  /**< for most kinds of data */
 };
 
-/** Verbose alternative ot struct termios */
+/** Verbose alternative to struct termios */
 typedef union serial_options serial_options_t;
 
 /**
@@ -118,18 +131,55 @@ typedef union serial_options serial_options_t;
 union serial_options
 {
 	struct termios termios; /**< Standard structure */
+
 	struct
 	{
-		struct serial_input_modes   input;
-		struct serial_output_modes  output;
-		struct serial_control_modes control;
-		struct serial_local_modes   local;
+		struct serial_input_modes   input;   /**< Input mode flags */
+		struct serial_output_modes  output;  /**< Output mode flags */
+		struct serial_control_modes control; /**< Control mode flags */
+		struct serial_local_modes   local;   /**< Local mode flags */
 		uint8_t                     line_discipline;
-		uint8_t                     control_characters[32];
-		uint32_t                    input_speed;
-		uint32_t                    output_speed;
-	};
+
+		union
+		{
+			uint8_t array[NCCS]; /**< Standard array */
+
+			struct
+			{
+				uint8_t interrupt; /**< Send a `SIGINT` signal */
+				uint8_t quit;      /**< Send a `SIGQUIT` signal */
+				uint8_t erase;
+				uint8_t kill;
+				uint8_t end_of_file;
+				/** Timeout in deciseconds for noncanonical read. */
+				uint8_t timeout;
+				/** Minimum number of characters for noncanonical read. */
+				uint8_t minimum;
+			}; /**< Verbose alternative */
+		} control_characters; /**< Values of special characters */
+
+		uint32_t input_speed;
+		uint32_t output_speed;
+	}; /**< Verbose alternative */
 };
+
+/**
+@var serial_options::interrupt
+Recognized when @ref enable_signals is set, and then not passed as input.
+
+The `INTR` (interrupt) character raises a `SIGINT` signal for all processes in
+the foreground job associated with the terminal. The `INTR` character itself is
+then discarded.
+
+Typically, the INTR character is `C-c` (i.e. `0x03`, `ETX`, end of text)
+
+@var serial_options::quit
+The `QUIT` character raises a `SIGQUIT` signal for all processes in the
+foreground job associated with the terminal. The QUIT character itself is
+then discarded.
+
+Typically, the QUIT character is `C-\` (i.e. `0x1c`, `FS`, file separator)
+*/
 
 /** @struct serial_input_modes
 Documentation source:
@@ -232,6 +282,19 @@ If this bit is set, then filling up the terminal input buffer sends a `BEL`
 character (code `007`) to the terminal to ring the bell.
 
 This is a BSD extension.
+*/
+
+/**
+@var serial_output_modes::enable_processing
+If this bit is set, output data is processed in some unspecified way so that it
+is displayed appropriately on the terminal device. This typically includes
+mapping newline characters (`\n`) onto carriage return and linefeed pairs.
+
+If this bit isn’t set, the characters are transmitted as-is.
+
+@var serial_output_modes::map_nl_to_crnl
+If this bit is set, convert the newline character on output into a pair of
+characters, carriage return followed by linefeed.
 */
 
 /** @struct serial_control_modes
