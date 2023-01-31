@@ -1,10 +1,14 @@
-#include <libunit.h>
 #include "ublox.h"
 
-#define MSGSZ_condition(TYPE, EXPECTED_SIZE) sizeof(TYPE) == EXPECTED_SIZE
+#include <libunit.h>
+
+// clang-format off
+
+#define MSGSZ_condition(NAME, TYPE, EXPECTED)	  \
+	sizeof(TYPE) == EXPECTED
 
 TEST_SECTION(messages_size, extract_name, MSGSZ_condition,
-             (ublox_message_t, 4),
-             (ublox_checksum_t, 2),
-             (ubx_rxm_sfrbx, sizeof(ublox_message_t) + 8)
+	(ublox_message,  ublox_message_t,                                        4),
+	(ublox_checksum, ublox_checksum_t,                                       2),
+	(ubx_rxm_sfrbx,  struct ublox_navigation_data, sizeof(ublox_message_t) + 8)
 )

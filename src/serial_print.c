@@ -23,7 +23,8 @@
 	map_upper_to_lower, enable_start_stop_out, any_can_restart_output, \
 	enable_start_stop_in, ring_bell_when_full, is_utf8
 
-#define OUTPUT_BOOLS enable_processing, map_lower_to_upper
+#define OUTPUT_BOOLS enable_processing, map_lower_to_upper, map_nl_to_crnl, \
+	map_cr_to_nl, no_cr, nl_returns, use_fill, fill_is_del, vertical_tab_delay
 
 #define CONTROL_BOOLS \
 	two_stop_bits, read, enable_parity, odd_parity, hang_up, is_local
@@ -37,31 +38,34 @@ static inline const char* bool2str(bool b)
 	return b ? "true" : "false";
 }
 
-void serial_print_input_modes(const struct serial_input_modes* modes)
+static void serial_print_input_modes(const struct serial_input_modes* modes)
 {
 	printf("  input_modes:\n");
 	FOR(EACH(INPUT_FIELDS), PRINT_BOOL, modes);
 }
 
-void serial_print_output_modes(const struct serial_output_modes* modes)
+static void serial_print_output_modes(const struct serial_output_modes* modes)
 {
 	printf("  output_modes:\n");
 	FOR(EACH(OUTPUT_BOOLS), PRINT_BOOL, modes);
 }
 
-void serial_print_control_modes(const struct serial_control_modes* modes)
+static void serial_print_control_modes(const struct serial_control_modes* modes)
 {
 	printf("  control_modes:\n");
 	printf("    %-*s: %i\n", WIDTH, "character_size", 5 + modes->character_size);
 	FOR(EACH(CONTROL_BOOLS), PRINT_BOOL, modes);
 }
 
-void serial_print_local_modes(const struct serial_local_modes* modes)
+static void serial_print_local_modes(const struct serial_local_modes* modes)
 {
 	printf("  local_modes:\n");
 	FOR(EACH(LOCAL_FIELDS), PRINT_BOOL, modes);
 }
 
+/**
+ * Output a YAML to stderr listing the status of the terminal options.
+ */
 bool serial_print_config(serial_port_t* port)
 {
 	serial_ensure_options(port);
@@ -71,8 +75,8 @@ bool serial_print_config(serial_port_t* port)
 	serial_print_control_modes(&port->options.control);
 	serial_print_local_modes(&port->options.local);
 	printf("  baudrate:\n");
-	printf("    %-*s: %li\n", WIDTH, "input",  serial_extract_baudrate(port->options.input_speed));
-	printf("    %-*s: %li\n", WIDTH, "output", serial_extract_baudrate(port->options.output_speed));
+	printf("    %-*s: %li\n", WIDTH, "input",  serial_decode_baudrate(port->options.input_speed));
+	printf("    %-*s: %li\n", WIDTH, "output", serial_decode_baudrate(port->options.output_speed));
 	printf("---\n");
 	return true;
 }

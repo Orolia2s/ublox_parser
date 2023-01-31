@@ -24,10 +24,10 @@ TEST_SECTION(serial_types, extract_name, TYPE_condition,
 
 
 #define CONTROL_condition(NAME, INITIALIZER, EXPECTED_VALUE) \
-	({                                                       \
-		struct serial_control_modes v = {ID INITIALIZER};    \
-		*(tcflag_t*)&v == EXPECTED_VALUE;                    \
-	})
+    ({                                                       \
+        struct serial_control_modes v = {ID INITIALIZER};    \
+        *(tcflag_t*)&v == EXPECTED_VALUE;                    \
+    })
 
 TEST_SECTION(serial_control_modes, extract_name, CONTROL_condition,
 	(char_size_5,   (.character_size = character_size_5), CS5),
@@ -43,11 +43,11 @@ TEST_SECTION(serial_control_modes, extract_name, CONTROL_condition,
 );
 
 
-#define INPUT_condition(NAME, EXPECTED_VALUE)              \
-	({                                                     \
-		struct serial_input_modes v = {. NAME = true};     \
-		*(tcflag_t*)&v == EXPECTED_VALUE;                  \
-	})
+#define INPUT_condition(NAME, EXPECTED_VALUE)          \
+    ({                                                 \
+        struct serial_input_modes v = {. NAME = true}; \
+        *(tcflag_t*)&v == EXPECTED_VALUE;              \
+    })
 
 TEST_SECTION(serial_input_modes, extract_name, INPUT_condition,
 	(ignore_break,          IGNBRK),
@@ -67,11 +67,11 @@ TEST_SECTION(serial_input_modes, extract_name, INPUT_condition,
 	(is_utf8,                IUTF8)
 );
 
-#define LOCAL_condition(NAME, EXPECTED_VALUE)	           \
-	({                                                     \
-		struct serial_local_modes v = {. NAME = true};     \
-		*(tcflag_t*)&v == EXPECTED_VALUE;                  \
-	})
+#define LOCAL_condition(NAME, EXPECTED_VALUE)          \
+    ({                                                 \
+        struct serial_local_modes v = {. NAME = true}; \
+        *(tcflag_t*)&v == EXPECTED_VALUE;              \
+    })
 
 TEST_SECTION(serial_local_modes, extract_name, LOCAL_condition,
 	(enable_signals,      ISIG),
@@ -82,11 +82,11 @@ TEST_SECTION(serial_local_modes, extract_name, LOCAL_condition,
 	(enable_processing, IEXTEN)
 );
 
-#define OUTPUT_condition(NAME, EXPECTED_VALUE)	           \
-	({                                                     \
-		struct serial_output_modes v = {. NAME = true};     \
-		*(tcflag_t*)&v == EXPECTED_VALUE;                  \
-	})
+#define OUTPUT_condition(NAME, EXPECTED_VALUE)          \
+    ({                                                  \
+        struct serial_output_modes v = {. NAME = true}; \
+        *(tcflag_t*)&v == EXPECTED_VALUE;               \
+    })
 
 TEST_SECTION(serial_output_modes, extract_name, OUTPUT_condition,
 	(enable_processing,  OPOST),
@@ -100,7 +100,26 @@ TEST_SECTION(serial_output_modes, extract_name, OUTPUT_condition,
 	(vertical_tab_delay, VTDLY)
 );
 
-void print_end(int*)
+#define CHARS_condition(NAME, STD)          \
+    ({                                      \
+        serial_options_t opt = {};          \
+        opt.control_characters.NAME = 0xf;  \
+        opt.termios.c_cc[STD] == 0xf;       \
+    })
+
+TEST_SECTION(serial_control_characters, extract_name, CHARS_condition,
+	(interrupt,  VINTR),
+	(quit,       VQUIT),
+	(erase,     VERASE),
+	(kill,       VKILL),
+	(end_of_file, VEOF),
+	(timeout,    VTIME),
+	(minimum,     VMIN)
+);
+
+// clang-format on
+
+static void print_end(int*)
 {
 	ft_printf("} %s// Section serial%s\n\n",
 	          COLOR(BLUE), COLOR(NORMAL));
@@ -116,5 +135,6 @@ int test_serial()
 		|| test_serial_control_modes()
 		|| test_serial_input_modes()
 		|| test_serial_local_modes()
-		|| test_serial_output_modes();
+		|| test_serial_output_modes()
+		|| test_serial_control_characters();
 }

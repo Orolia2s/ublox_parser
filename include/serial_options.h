@@ -122,6 +122,27 @@ enum character_size
 	character_size_8 = 3  /**< for most kinds of data */
 };
 
+/**
+ * Terminal special characters
+ */
+union serial_control_characters
+{
+	uint8_t array[NCCS]; /**< Standard array */
+
+	struct
+	{
+		uint8_t interrupt; /**< Send a `SIGINT` signal */
+		uint8_t quit;      /**< Send a `SIGQUIT` signal */
+		uint8_t erase;
+		uint8_t kill;
+		uint8_t end_of_file;
+		/** Timeout in deciseconds for noncanonical read. */
+		uint8_t timeout;
+		/** Minimum number of characters for noncanonical read. */
+		uint8_t minimum;
+	}; /**< Verbose alternative */
+};
+
 /** Verbose alternative to struct termios */
 typedef union serial_options serial_options_t;
 
@@ -134,38 +155,47 @@ union serial_options
 
 	struct
 	{
-		struct serial_input_modes   input;   /**< Input mode flags */
-		struct serial_output_modes  output;  /**< Output mode flags */
-		struct serial_control_modes control; /**< Control mode flags */
-		struct serial_local_modes   local;   /**< Local mode flags */
-		uint8_t                     line_discipline;
-
-		union
-		{
-			uint8_t array[NCCS]; /**< Standard array */
-
-			struct
-			{
-				uint8_t interrupt; /**< Send a `SIGINT` signal */
-				uint8_t quit;      /**< Send a `SIGQUIT` signal */
-				uint8_t erase;
-				uint8_t kill;
-				uint8_t end_of_file;
-				/** Timeout in deciseconds for noncanonical read. */
-				uint8_t timeout;
-				/** Minimum number of characters for noncanonical read. */
-				uint8_t minimum;
-			}; /**< Verbose alternative */
-		} control_characters; /**< Values of special characters */
-
-		uint32_t input_speed;
-		uint32_t output_speed;
+		struct serial_input_modes       input;   /**< Input mode flags */
+		struct serial_output_modes      output;  /**< Output mode flags */
+		struct serial_control_modes     control; /**< Control mode flags */
+		struct serial_local_modes       local;   /**< Local mode flags */
+		uint8_t                         line_discipline;
+		/** Terminal special characters. */
+		union serial_control_characters control_characters;
+		/** Input line speed, see @ref speed*/
+		uint32_t                        input_speed;
+		/** Output line speed, see @ref speed*/
+		uint32_t                        output_speed;
 	}; /**< Verbose alternative */
 };
 
 /**
-@var serial_options::interrupt
-Recognized when @ref enable_signals is set, and then not passed as input.
+@page speed Line speed
+The terminal line speed tells the computer how fast to read and write data on
+the terminal.
+
+If the terminal is connected to a real serial line, the terminal speed you
+specify actually controls the line—if it doesn’t match the terminal’s own idea
+of the speed, communication does not work. Real serial ports accept only certain
+standard speeds. Also, particular hardware may not support even all the standard
+speeds. Specifying a speed of zero hangs up a dialup connection and turns off
+modem control signals.
+
+If the terminal is not a real serial line (for example, if it is a network
+connection), then the line speed won’t really affect data transmission speed,
+but some programs will use it to determine the amount of padding needed. It’s
+best to specify a line speed value that matches the actual speed of the actual
+terminal, but you can safely experiment with different values to vary the amount
+of padding.
+
+There are actually two line speeds for each terminal, one for input and one for
+output. You can set them independently, but most often terminals use the same
+speed for both directions.
+*/
+
+/**
+@var serial_control_characters::interrupt
+Recognized when @ref serial_local_modes::enable_signals is set, and then not passed as input.
 
 The `INTR` (interrupt) character raises a `SIGINT` signal for all processes in
 the foreground job associated with the terminal. The `INTR` character itself is
@@ -173,7 +203,7 @@ then discarded.
 
 Typically, the INTR character is `C-c` (i.e. `0x03`, `ETX`, end of text)
 
-@var serial_options::quit
+@var serial_control_characters::quit
 The `QUIT` character raises a `SIGQUIT` signal for all processes in the
 foreground job associated with the terminal. The QUIT character itself is
 then discarded.

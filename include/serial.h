@@ -7,8 +7,10 @@
 
 #include "serial_options.h"
 
+#include <stdbool.h>
 #include <stdint.h> // uint*_t
 
+/** Might or might not be a struct. */
 typedef struct serial_port serial_port_t;
 
 /**
@@ -16,10 +18,10 @@ typedef struct serial_port serial_port_t;
  */
 struct serial_port
 {
-	int              file_descriptor;
-	serial_options_t options;
-	uint8_t          opened      :1;
-	uint8_t          got_options :1;
+	int              file_descriptor; /**< Underlying file */
+	serial_options_t options;         /**< Terminal options */
+	uint8_t          opened      :1;  /**< Is this file still open ? */
+	uint8_t          got_options :1;  /**< Is @ref options filled ? */
 };
 
 serial_port_t serial_open(const char* port_name);
@@ -27,11 +29,10 @@ void          serial_close(serial_port_t* port);
 bool          serial_get_options(serial_port_t* port);
 
 bool          serial_make_raw(serial_port_t* port);
-int64_t       serial_extract_baudrate(uint32_t flag);
+int64_t       serial_decode_baudrate(speed_t flag);
+speed_t       serial_encode_baudrate(int64_t speed_in_bps);
 
-void serial_print_input_modes(const struct serial_input_modes* modes);
-void serial_print_control_modes(const struct serial_control_modes* modes);
-bool serial_print_config(serial_port_t* port);
+bool          serial_print_config(serial_port_t* port);
 
 /**
  * Use the RAII with serial ports.
