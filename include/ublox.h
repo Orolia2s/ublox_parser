@@ -10,6 +10,7 @@
 #include "serial.h"
 
 #include <ft_prepro/enum.h>
+#include <ft_string.h>
 
 #include <sys/types.h> // size_t
 
@@ -95,16 +96,26 @@ DECLARE_ENUM_WITH_VALUES(ublox_constellation,
 struct ublox_navigation_data
 {
 	struct ublox_header header;
-	uint8_t             constellation; /**< GNSS identifier */
-	uint8_t             satellite;     /**< Satellite identifier */
-	uint8_t             _reserved1;
+	uint8_t             constellation;     /**< GNSS identifier */
+	uint8_t             satellite;         /**< Satellite identifier */
+	uint8_t             signal;            /**< Signal identifier */
 	uint8_t             glonass_frequency; /**< Only used for GLONASS */
 	/** The number of data words contained in this message. */
 	uint8_t             word_count;
 	/** The tracking channel number the message was received on. */
 	uint8_t             channel;
-	uint8_t             version; /**< Message version (=2 for this version) */
-	uint8_t             _reserved2;
+	/** Message version (=2 for this version). */
+	uint8_t             version;
+	uint8_t             _reserved;
+};
+
+struct ublox_gps_l1ca
+{
+	struct
+	{
+		uint32_t parity :6;
+		uint32_t data   :24;
+	} words[10];
 };
 
 bool             ublox_port_config(serial_port_t* port);
@@ -112,6 +123,9 @@ bool             ublox_port_config(serial_port_t* port);
 ublox_message_t* ublox_next_message(serial_port_t* port);
 
 ublox_checksum_t ublox_compute_checksum(ublox_message_t* message, size_t size);
+
+t_string ublox_header_tostring(struct ublox_header* message);
+t_string ublox_navigation_data_tostring(struct ublox_navigation_data* message);
 
 /**
 @var ublox_header::class
