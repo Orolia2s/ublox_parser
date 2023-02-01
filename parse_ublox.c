@@ -11,6 +11,30 @@
 #include <stdio.h>  // printf
 #include <stdlib.h> // free
 
+/**
+ * Receive, parse and display all ublox messages found on the serial port.
+ *
+ * @param passive: When passive, do not change the port config, only display it and try to read.
+ */
+void parse_ublox(const char* port_name, bool passive)
+{
+	ublox_message_t* message;
+	Serial           port = serial_open(port_name);
+
+	if (passive)
+		serial_print_config(&port);
+	else
+		ublox_port_config(&port);
+
+	while ((message = ublox_next_message(&port)) != NULL)
+	{
+		log_info("<%s %#.2hhx [%hu]>", ublox_class_strings[message->class],
+		         message->type, message->length);
+		free(message);
+	}
+
+} /* <- port will be closed at this point */
+
 const char*  argp_program_version     = "ublox_parser " PP_STR(VERSION);
 const char*  argp_program_bug_address = "<antoine.gagniere@orolia2s.com>";
 static char  doc[] = "Prints serial port configuration and ublox messages.";
@@ -34,20 +58,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
 	case 'p': arguments->is_passive = true; break;
 	case ARGP_KEY_ARG:
 		if (arg)
-		{
-			Serial port = serial_open(arg);
-			if (arguments->is_passive)
-				serial_print_config(&port);
-			else
-				ublox_port_config(&port);
-			ublox_message_t* message;
-			while ((message = ublox_next_message(&port)) != NULL)
-			{
-				log_info("<%s %#.2hhx [%hu]>", ublox_class_strings[message->class],
-				         message->type, message->length);
-				free(message);
-			}
-		}
+			parse_ublox(arg, arguments->is_passive);
 		return 0;
 	default: return ARGP_ERR_UNKNOWN;
 	}
