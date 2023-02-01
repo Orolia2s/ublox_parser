@@ -16,7 +16,7 @@ function check_program_installed()
 	fi
 }
 
-check_program_installed pip
+check_program_installed pip python3-pip
 
 printf "%-40s" "Checking for conan"
 if command -v conan >/dev/null 2>/dev/null
