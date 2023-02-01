@@ -2,13 +2,14 @@
 #include "ublox.h"
 
 #include <argp.h>
-#include <fcntl.h>
-#include <ft_prepro/tools.h>
-#include <ft_printf.h>
+#include <fcntl.h>           // open
+#include <ft_prepro/tools.h> // PP_STR
+#include <log.h>
 #include <termios.h>
 
 #include <stdbool.h>
-#include <stdio.h>
+#include <stdio.h>  // printf
+#include <stdlib.h> // free
 
 const char*  argp_program_version     = "ublox_parser " PP_STR(VERSION);
 const char*  argp_program_bug_address = "<antoine.gagniere@orolia2s.com>";
@@ -39,7 +40,13 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
 				serial_print_config(&port);
 			else
 				ublox_port_config(&port);
-			ublox_next_message(&port);
+			ublox_message_t* message;
+			while ((message = ublox_next_message(&port)) != NULL)
+			{
+				log_info("<%s %#.2hhx [%hu]>", ublox_class_strings[message->class],
+				         message->type, message->length);
+				free(message);
+			}
 		}
 		return 0;
 	default: return ARGP_ERR_UNKNOWN;
