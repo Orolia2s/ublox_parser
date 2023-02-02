@@ -28,8 +28,17 @@ void parse_ublox(const char* port_name, bool passive)
 
 	while ((message = ublox_next_message(&port)) != NULL)
 	{
-		log_info("<%s %#.2hhx [%hu]>", ublox_class_strings[message->class],
-		         message->type, message->length);
+		if (message->class == RXM && message->type == 0x13)
+		{
+			RAII(t_string) str = ublox_navigation_data_tostring(
+				(struct ublox_navigation_data*)message);
+			log_info("{%s}", cstring(&str));
+		}
+		else
+		{
+			RAII(t_string) str = ublox_header_tostring(message);
+			log_info("{%s}", cstring(&str));
+		}
 		free(message);
 	}
 
@@ -67,10 +76,10 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
 
 static struct argp argp = { options, parse_opt, args_doc, doc, 0, 0, 0 };
 
-int main(int ac, char** av)
+int main(int arg_count, char** arg_values)
 {
 	struct arguments arguments = { .is_passive = false };
 
-	argp_parse(&argp, ac, av, 0, 0, &arguments);
+	argp_parse(&argp, arg_count, arg_values, 0, 0, &arguments);
 	return 0;
 }

@@ -22,40 +22,51 @@ ublox_message_t* ublox_next_message(serial_port_t* port)
 	t_deque* queue = &port->buffer;
 	t_array  result[] = {NEW_ARRAY(uint8_t)};
 
-	//log_trace("%s(%i)", __PRETTY_FUNCTION__, port->file_descriptor);
-
 sync:
 	while (serial_accumulate(port, sizeof(ublox_sync_chars)
 	                         + ublox_smallest_message_size)
 	       && *(uint8_t*)ftq_first(queue) != ublox_sync_chars[0])
 	{
-		//log_trace("Discarding: %#hhx\n", *(uint8_t*)ftq_first(queue));
 		FTQ_POP_FRONT_ONE(queue, NULL);
 	}
 	if (*(uint8_t*)ftq_first(queue) != ublox_sync_chars[0])
 		return NULL;
-	//log_trace("Sync0: %#hhx\n", *(uint8_t*)ftq_first(queue));
 	FTQ_POP_FRONT_ONE(queue, NULL);
 	if (*(uint8_t*)ftq_first(queue) != ublox_sync_chars[1])
 		goto sync;
-	//log_trace("Sync1: %#hhx\n", *(uint8_t*)ftq_first(queue));
 	FTQ_POP_FRONT_ONE(queue, NULL);
-	log_trace("Class ? %#.2hhx", *(uint8_t*)ftq_first(queue));
 	if (!is_valid_ublox_class(*(uint8_t*)ftq_first(queue)))
+	{
+		log_trace("Discaring message of unknown class %#.2hhx",
+		          *(uint8_t*)ftq_first(queue));
 		goto sync;
-
-	log_trace("Found the beginning of a %s message",
-	          ublox_class_strings[*(uint8_t*)ftq_first(queue)]);
+	}
 	ftq_pop_front_into_array(queue, result, sizeof(struct ublox_header));
 
-	ublox_message_t* message = result->data; // Dangerous alias, careful
-	log_debug("Potential message of class %s and type %#hhx, of length %hu",
-	          ublox_class_strings[message->class],
-	          message->type, message->length);
-	if (!serial_accumulate(port, message->length + sizeof(struct ublox_footer)))
+	ublox_message_t** message = (ublox_message_t**)&result->data;
+	if (!serial_accumulate(port, message[0]->length + sizeof(struct ublox_footer)))
+	{
+		log_trace(
+			"Unable to read completely a message of class %s, discarding header",
+			ublox_class_strings[message[0]->class]);
 		goto fail;
-	ftq_pop_front_into_array(queue, result, message->length + sizeof(struct ublox_footer));
+	}
+	ftq_pop_front_into_array(queue, result, message[0]->length);
 	fta_trim(result);
+	{
+		ublox_checksum_t computed = ublox_compute_checksum(result->data, result->size);
+		ublox_checksum_t expected;
+		ftq_pop_front(queue, &expected, sizeof(expected));
+		log_debug("Found %s message, with checksum %#.4hx == %#.4hx ?",
+		          ublox_class_strings[message[0]->class],
+		          *(uint16_t*)&computed, *(uint16_t*)&expected);
+		if (*(uint16_t*)&computed != *(uint16_t*)&expected)
+		{
+			log_warn("Discarding message of type %s with invalid checksum",
+			         ublox_class_strings[message[0]->class]);
+			goto fail;
+		}
+	}
 	return result->data;
 fail:
 	fta_clear(result);
