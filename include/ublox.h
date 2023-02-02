@@ -80,8 +80,10 @@ DECLARE_ENUM_WITH_VALUES(ublox_constellation,
 	(SBAS    /**< Satellite-based augmentation systems            */, 1),
 	(Galileo /**< From Europe                                     */, 2),
 	(BeiDou  /**< BeiDou Navigation Satellite System, from China  */, 3),
+	(IMES    /**< Indoor MEssaging System, from Japan             */, 4),
 	(QZSS    /**< Quasi-Zenith Satellite System, from Japan       */, 5),
-	(GLONASS /**< Global Navigation Satellite System, from Russia */, 6)
+	(GLONASS /**< Global Navigation Satellite System, from Russia */, 6),
+	(NavIC   /**< Navigation Indian Constellation                 */, 7)
 );
 
 // clang-format on
@@ -111,6 +113,7 @@ struct ublox_navigation_data
 
 struct ublox_gps_l1ca
 {
+	struct ublox_navigation_data super;
 	struct
 	{
 		uint32_t parity :6;

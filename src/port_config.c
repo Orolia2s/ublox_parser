@@ -24,6 +24,8 @@ bool ublox_port_config(serial_port_t* port)
 {
 	serial_print_config(port);
 	cfsetspeed(&port->options.termios, B115200);
+	port->options.control_characters.minimum = ublox_smallest_message_size;
+	port->options.control_characters.timeout = 15; // 1.5 second
 	serial_make_raw(port);
 	serial_print_config(port);
 	return true;
