@@ -39,17 +39,9 @@ TEST_SECTION(baudrate_encode, extract_name, BAUDE_condition,
 
 // clang-format on
 
-static void print_end(int* _)
-{
-	ft_printf("} %s// Section baudrate%s\n\n",
-	          COLOR(BLUE), COLOR(NORMAL));
-}
-
 int test_baudrate()
 {
-    int __attribute__((cleanup(print_end))) a =
-        ft_printf("%sEntering section baudrate%s {\n\n",
-                  COLOR(BOLD, BLUE), COLOR(NORMAL));
+	TEST_GROUP("baudrate");
 
     return test_baudrate_decode()
 	    || test_baudrate_encode();

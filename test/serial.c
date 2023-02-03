@@ -138,17 +138,9 @@ TEST_SECTION(serial_whole, extract_name, WHOLE_condition,
 
 // clang-format on
 
-static void print_end(int*_)
-{
-	ft_printf("} %s// Section serial options%s\n\n",
-	          COLOR(BLUE), COLOR(NORMAL));
-}
-
 int test_serial_options()
 {
-	int __attribute__((cleanup(print_end))) a =
-		ft_printf("%sEntering section serial options %s {\n\n",
-		          COLOR(BOLD, BLUE), COLOR(NORMAL));
+	TEST_GROUP("serial options");
 
 	return test_serial_types()
 		|| test_serial_control_modes()

@@ -93,17 +93,9 @@ TEST_SECTION(set_speed_full, extract_name, SPEED_full_condition,
 	(921600)
 );
 
-static void print_end(int* _)
-{
-	ft_printf("} %s// Section port config%s\n\n",
-	          COLOR(BLUE), COLOR(NORMAL));
-}
-
 int test_port_config()
 {
-	int __attribute__((cleanup(print_end))) a =
-		ft_printf("%sEntering section port config%s {\n\n",
-		          COLOR(BOLD, BLUE), COLOR(NORMAL));
+	TEST_GROUP("port config");
 
 	return test_make_raw()
 		|| test_set_speed_empty()
