@@ -5,9 +5,11 @@
 ### As an executable
 
  - Display the current serial port configuration in the YAML format
+ - Output the ublox messages read on the serial port in the JSON format
 
 ### As a C library
 
+ - Iterate over all ublox messages read on the serial port
  - Verbose alternatives to termios
  - Extensive documentation
 

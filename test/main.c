@@ -2,7 +2,15 @@
 #include <ft_prepro/tools.h>
 #include <ft_printf.h>
 
-#define TEST_LIST messages_size, serial_options, baudrate, port_config
+/*
+ * Certain tests are meaningless if another test fails,
+ * the order important : the first failing test should be
+ * fixed before investigation other failling tests, as
+ * there might be a dependency.
+ */
+#define TEST_LIST \
+	serial_options, baudrate, port_config, \
+	messages_size
 
 #define DECLARE(IGNORED, NAME) \
     int MERGE(test, NAME)(void);

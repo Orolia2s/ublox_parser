@@ -138,7 +138,7 @@ TEST_SECTION(serial_whole, extract_name, WHOLE_condition,
 
 // clang-format on
 
-static void print_end(int*)
+static void print_end(int*_)
 {
 	ft_printf("} %s// Section serial options%s\n\n",
 	          COLOR(BLUE), COLOR(NORMAL));
