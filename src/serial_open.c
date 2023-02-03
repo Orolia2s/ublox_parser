@@ -10,7 +10,7 @@
 #include <string.h> // strerror
 #include <unistd.h> // close
 
-#define BUFFER_SIZE 2048 // TODO: configure in a better way
+#define BUFFER_SIZE 4096 // TODO: configure in a better way
 
 /**
  * Open the port in read-only, and allocate the buffer.

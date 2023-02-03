@@ -16,7 +16,7 @@ LDLIBS  += $(shell pkg-config --libs-only-l *.pc)
 SOURCES := $(shell find . -name '*.c')
 OBJECTS := $(SOURCES:%.c=%.o)
 
-build: main
+build: $(EXECUTABLE)
 
 run: $(EXECUTABLE)
 	./$<

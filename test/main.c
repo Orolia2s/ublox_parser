@@ -10,7 +10,7 @@
  */
 #define TEST_LIST \
 	serial_options, baudrate, port_config, \
-	messages_size
+	messages_size, checksum
 
 #define DECLARE(IGNORED, NAME) \
     int MERGE(test, NAME)(void);

@@ -64,7 +64,7 @@ sync:
 		{
 			log_warn("Discarding message of type %s with invalid checksum",
 			         ublox_class_strings[message[0]->class]);
-			goto fail;
+			goto sync;
 		}
 	}
 	return result->data;
