@@ -41,7 +41,5 @@ bool ublox_port_config(serial_port_t* port, int64_t baudrate)
 	serial_ensure_options(port);
 	if (!_ublox_port_set_speed(port, baudrate))
 		return false;
-	port->options.control_characters.minimum = ublox_smallest_message_size;
-	port->options.control_characters.timeout = 15; // 1.5 second
 	return serial_make_raw(port);
 }

@@ -29,7 +29,7 @@ sync:
 	{
 		FTQ_POP_FRONT_ONE(queue, NULL);
 	}
-	if (*(uint8_t*)ftq_first(queue) != ublox_sync_chars[0])
+	if (ftq_is_empty(queue) || *(uint8_t*)ftq_first(queue) != ublox_sync_chars[0])
 		return NULL;
 	FTQ_POP_FRONT_ONE(queue, NULL);
 	if (*(uint8_t*)ftq_first(queue) != ublox_sync_chars[1])

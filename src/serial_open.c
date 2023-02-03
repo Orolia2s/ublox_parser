@@ -20,7 +20,7 @@ serial_port_t serial_open(const char* port_name)
 	serial_port_t port = {.file_descriptor = -1, .opened = false, .got_options = false};
 	void*         buffer;
 
-	log_trace("%s(%s)", __PRETTY_FUNCTION__, port_name);
+	log_trace("%s(\"%s\")", __FUNCTION__, port_name);
 	if ((port.file_descriptor = open(port_name, O_RDONLY | O_NOCTTY)) < 0)
 	{
 		log_error("Unable to open \"%s\": %s", port_name, strerror(errno));
@@ -40,7 +40,7 @@ serial_port_t serial_open(const char* port_name)
  */
 bool serial_get_options(serial_port_t* port)
 {
-	log_trace("%s(%i)", __PRETTY_FUNCTION__, port->file_descriptor);
+	log_trace("%s(%i)", __FUNCTION__, port->file_descriptor);
 	if (tcgetattr(port->file_descriptor, &port->options.termios) != 0)
 	{
 		log_error("Unable to get the attributes of the terminal: %s", strerror(errno));
@@ -58,7 +58,7 @@ bool serial_get_options(serial_port_t* port)
  */
 void serial_close(serial_port_t* port)
 {
-	log_trace("%s(%i)", __PRETTY_FUNCTION__, port->file_descriptor);
+	log_trace("%s(%i)", __FUNCTION__, port->file_descriptor);
 	if (port->buffer.data)
 	{
 		free(port->buffer.data);
@@ -67,7 +67,7 @@ void serial_close(serial_port_t* port)
 	}
 	if (!port->opened)
 	{
-		log_error("Attempting to close a port that isn't open.");
+		log_warn("Attempting to close a port that isn't open.");
 		return;
 	}
 	if (close(port->file_descriptor) != 0)
