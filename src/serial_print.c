@@ -33,6 +33,9 @@
 	enable_signals, canonical, echo, echo_erasure, echo_kill, echo_nl, \
 	disable_flush, tostop, enable_processing
 
+#define CONTROL_CHARACTERS \
+	interrupt, quit, erase, kill, end_of_file, timeout, minimum
+
 static inline const char* bool2str(bool b)
 {
 	return b ? "true" : "false";
@@ -63,6 +66,15 @@ static void serial_print_local_modes(const struct serial_local_modes* modes)
 	FOR(EACH(LOCAL_FIELDS), PRINT_BOOL, modes);
 }
 
+#define PRINT_UCHAR(CHARS, NAME) \
+	printf("    %-*s: %#.2hhx\n", WIDTH, PP_STR(NAME), CHARS->NAME);
+
+static void serial_print_control_characters(union serial_control_characters* chars)
+{
+	printf("  control_characters:\n");
+	FOR(EACH(CONTROL_CHARACTERS), PRINT_UCHAR, chars);
+}
+
 /**
  * Output a YAML to stderr listing the status of the terminal options.
  */
@@ -74,7 +86,9 @@ bool serial_print_config(serial_port_t* port)
 	serial_print_output_modes(&port->options.output);
 	serial_print_control_modes(&port->options.control);
 	serial_print_local_modes(&port->options.local);
+	serial_print_control_characters(&port->options.control_characters);
 	printf("  baudrate:\n");
+	printf("    %-*s: %hhu\n", WIDTH, "line_discipline", port->options.line_discipline);
 	printf("    %-*s: %li\n", WIDTH, "input",  serial_decode_baudrate(port->options.input_speed));
 	printf("    %-*s: %li\n", WIDTH, "output", serial_decode_baudrate(port->options.output_speed));
 	printf("---\n");

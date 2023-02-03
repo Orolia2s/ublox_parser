@@ -2,7 +2,7 @@
 #include <ft_prepro/tools.h>
 #include <ft_printf.h>
 
-#define TEST_LIST messages_size, serial_options, baudrate
+#define TEST_LIST messages_size, serial_options, baudrate, port_config
 
 #define DECLARE(IGNORED, NAME) \
     int MERGE(test, NAME)(void);

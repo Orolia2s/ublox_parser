@@ -20,13 +20,13 @@
  *
  * The baud rate can be set to other powers of 2 times of 9600, up to 921600
  */
-bool ublox_port_config(serial_port_t* port)
+bool ublox_port_config(serial_port_t* port, int64_t baudrate)
 {
-	serial_print_config(port);
-	cfsetspeed(&port->options.termios, B115200);
+	serial_ensure_options(port);
+	port->options.input_speed  = serial_encode_baudrate(baudrate);
+	port->options.output_speed = serial_encode_baudrate(baudrate);
 	port->options.control_characters.minimum = ublox_smallest_message_size;
 	port->options.control_characters.timeout = 15; // 1.5 second
 	serial_make_raw(port);
-	serial_print_config(port);
 	return true;
 }

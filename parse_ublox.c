@@ -21,10 +21,9 @@ void parse_ublox(const char* port_name, bool passive)
 	ublox_message_t* message;
 	Serial           port = serial_open(port_name);
 
-	if (passive)
-		serial_print_config(&port);
-	else
-		ublox_port_config(&port);
+	if (!passive)
+		ublox_port_config(&port, 115200);
+	serial_print_config(&port);
 
 	while ((message = ublox_next_message(&port)) != NULL)
 	{
