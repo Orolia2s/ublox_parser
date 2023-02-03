@@ -6,6 +6,7 @@ CFLAGS   += -Wall -Wextra --std=c17
 CPPFLAGS += -I ../include
 CPPFLAGS += $(shell pkg-config --cflags-only-I *.pc)
 CPPFLAGS += -MMD
+CPPFLAGS += -D_DEFAULT_SOURCE
 
 LDFLAGS += -L ..
 LDLIBS  += -l ublox_parser
@@ -20,7 +21,7 @@ build: main
 run: $(EXECUTABLE)
 	./$<
 
-$(EXECUTABLE): $(OBJECTS)
+$(EXECUTABLE): $(OBJECTS) ../libublox_parser.a
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) $(LDLIBS) -o $@
 
 clean:

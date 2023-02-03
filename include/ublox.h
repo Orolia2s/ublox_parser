@@ -121,7 +121,7 @@ struct ublox_gps_l1ca
 	} words[10];
 };
 
-bool             ublox_port_config(serial_port_t* port);
+bool             ublox_port_config(serial_port_t* port, int64_t baudrate);
 
 ublox_message_t* ublox_next_message(serial_port_t* port);
 

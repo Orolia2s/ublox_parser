@@ -102,7 +102,8 @@ struct serial_local_modes
 	/** Send SIGTOU to background jobs attempting to write to the terminal. */
 	uint32_t tostop            :1;
 	uint32_t _echo_control     :1; /* Escape control characters */
-	uint32_t _misc             :5;
+	uint32_t _echo_print       :1; /* Print chars when erased, if ICANON and ECHO */
+	uint32_t _misc             :4;
 	uint32_t enable_processing :1; /* implementation-defined input processing */
 };
 
