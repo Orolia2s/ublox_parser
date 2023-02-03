@@ -35,6 +35,8 @@ struct serial_input_modes
 	uint32_t enable_start_stop_in  :1; /**< Enable start/stop input control */
 	uint32_t ring_bell_when_full   :1; /**< Ring bell when input queue is full */
 	uint32_t is_utf8               :1; /**< Input is UTF8 */
+	uint32_t _unused               :16;
+	uint32_t _dont_modify_speed    :1; /* Used when setting speed */
 };
 
 /**
@@ -69,7 +71,7 @@ struct serial_output_modes
  */
 struct serial_control_modes
 {
-	uint32_t _unused        :4;
+	uint32_t _speed_4lsb    :4; /* Least significant 4-bits of the line speed */
 	uint32_t character_size :2; /**< Number of bits used by a single character */
 	uint32_t two_stop_bits  :1; /**< Set two stop bits, rather than one */
 	uint32_t read           :1; /**< Enable receiver */
@@ -80,6 +82,7 @@ struct serial_control_modes
 	/** Lower modem control lines after last process closes the device (hang up). */
 	uint32_t hang_up        :1;
 	uint32_t is_local       :1; /**< Ignore modem control lines */
+	uint32_t _speed_is_extra:1; /* For non-posix baud rates */
 };
 
 /**

@@ -26,7 +26,6 @@ ssize_t serial_single_read(serial_port_t* port)
  */
 bool serial_accumulate(serial_port_t* port, size_t n)
 {
-	// log_trace("%s(%i, %zu)", __PRETTY_FUNCTION__, port->file_descriptor, n);
 	while (ftq_size(&port->buffer) < n)
 		if (serial_single_read(port) <= 0)
 			return false;
