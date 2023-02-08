@@ -111,14 +111,14 @@ struct ublox_navigation_data
 	uint8_t             _reserved;
 };
 
-struct ublox_gps_l1ca
+struct ublox_monitoring_rf
 {
-	struct ublox_navigation_data super;
-	struct
-	{
-		uint32_t parity :6;
-		uint32_t data   :24;
-	} words[10];
+	struct ublox_header header;
+};
+
+struct ublox_monitoring_hardware
+{
+	struct ublox_header header;
 };
 
 bool             ublox_port_config(serial_port_t* port, int64_t baudrate);
