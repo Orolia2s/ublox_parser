@@ -8,3 +8,8 @@
 *.lock
 *.o
 *.pc
+
+# Documentation
+doc/html/
+doc/latex/
+doc/man/
