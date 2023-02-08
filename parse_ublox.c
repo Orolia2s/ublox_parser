@@ -14,7 +14,8 @@
 /**
  * Receive, parse and display all ublox messages found on the serial port.
  *
- * @param passive: When passive, do not change the port config, only display it and try to read.
+ * @param passive: When passive, do not change the port config, only display it
+ * and try to read.
  */
 void parse_ublox(const char* port_name, bool passive)
 {
@@ -30,28 +31,40 @@ void parse_ublox(const char* port_name, bool passive)
 	{
 		if (message->class == RXM && message->type == 0x13)
 		{
-			RAII(t_string) str = ublox_navigation_data_tostring(
-				(struct ublox_navigation_data*)message);
+			RAII(t_string)
+			str = ublox_navigation_data_tostring((struct ublox_navigation_data*)message);
+			log_info("{%s}", cstring(&str));
+		}
+		else if (message->class == MON && message->type == HW)
+		{
+			RAII(t_string)
+			str = ublox_monitoring_hardware_tostring((struct ublox_monitoring_hardware*)message);
+			log_info("{%s}", cstring(&str));
+		}
+		else if (message->class == MON && message->type == RF)
+		{
+			RAII(t_string)
+			str = ublox_monitoring_rf_tostring((struct ublox_monitoring_rf*)message);
 			log_info("{%s}", cstring(&str));
 		}
 		else
 		{
-			RAII(t_string) str = ublox_header_tostring(message);
-			log_info("{%s}", cstring(&str));
+			// RAII(t_string) str = ublox_header_tostring(message);
+			// log_info("{%s}", cstring(&str));
 		}
 		free(message);
 	}
 
 } /* <- port will be closed at this point */
 
-const char*  argp_program_version     = "ublox_parser " PP_STR(VERSION);
-const char*  argp_program_bug_address = "<antoine.gagniere@orolia2s.com>";
-static char  doc[] = "Prints serial port configuration and ublox messages.";
-static char  args_doc[] = "[PATH]";
+const char* argp_program_version     = "ublox_parser " PP_STR(VERSION);
+const char* argp_program_bug_address = "<antoine.gagniere@orolia2s.com>";
+static char doc[]      = "Prints serial port configuration and ublox messages.";
+static char args_doc[] = "[PATH]";
 
 static struct argp_option options[] = {
-	{"passive", 'p', 0, OPTION_ARG_OPTIONAL, "Do not change the port configuration, only display it.", 1},
-	{ 0 }
+    {"passive", 'p', 0, OPTION_ARG_OPTIONAL, "Do not change the port configuration, only display it.", 1},
+    {0}
 };
 
 struct arguments
@@ -74,11 +87,11 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
 	return 0;
 }
 
-static struct argp argp = { options, parse_opt, args_doc, doc, 0, 0, 0 };
+static struct argp argp = {options, parse_opt, args_doc, doc, 0, 0, 0};
 
-int main(int arg_count, char** arg_values)
+int                main(int arg_count, char** arg_values)
 {
-	struct arguments arguments = { .is_passive = false };
+	struct arguments arguments = {.is_passive = false};
 
 	argp_parse(&argp, arg_count, arg_values, 0, 0, &arguments);
 	return 0;

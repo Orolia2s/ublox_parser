@@ -14,10 +14,10 @@
 
 #include <sys/types.h> // size_t
 
-#include <stdint.h> // uint*_t
+#include <stdint.h>    // uint*_t
 
-extern const uint8_t ublox_sync_chars[2];
-extern const size_t  ublox_smallest_message_size;
+extern const uint8_t        ublox_sync_chars[2];
+extern const size_t         ublox_smallest_message_size;
 
 /**
  * All ublox messages inherit from that type.
@@ -32,7 +32,7 @@ typedef struct ublox_header ublox_message_t;
  */
 struct ublox_header
 {
-	uint8_t  class;  /**< Message Class */
+	uint8_t class;   /**< Message Class */
 	uint8_t  type;   /**< Message ID */
 	uint16_t length; /**< Number of bytes in the payload */
 };
@@ -70,6 +70,11 @@ DECLARE_ENUM_WITH_VALUES(ublox_class,
 	(MGA /**< Multiple GNSS Assistance Messages        */, 0x13),
 	(LOG /**< Logging Messages                         */, 0x21),
 	(SEC /**< Security Feature Messages                */, 0x27)
+);
+
+DECLARE_ENUM_WITH_VALUES(ublox_monitoring_message,
+	(HW /**< Hardware status */, 0x09),
+	(RF /**< RF information */, 0x38)
 );
 
 /**
@@ -114,11 +119,52 @@ struct ublox_navigation_data
 struct ublox_monitoring_rf
 {
 	struct ublox_header header;
+	uint8_t             version;
+	uint8_t             n_blocks;
+	uint8_t             _reserved0[2];
+};
+
+struct ublox_monitoring_rf_block
+{
+	uint8_t  block_id;
+	uint8_t  jamming_state :2;
+	uint8_t  antenna_status;
+	uint8_t  antenna_power;
+	uint32_t post_status;
+	uint8_t  _reserved1[4];
+	uint16_t noise_per_ms;
+	uint16_t agc_count;
+	uint8_t  jam_indicator;
+	int8_t   ofs_i;
+	uint8_t  mag_i;
+	int8_t   ofs_q;
+	uint8_t  mag_q;
+	uint8_t  _reserved2[3];
 };
 
 struct ublox_monitoring_hardware
 {
 	struct ublox_header header;
+	uint32_t            pin_sel;
+	uint32_t            pin_bank;
+	uint32_t            pin_dir;
+	uint32_t            pin_val;
+	uint16_t            noise_per_ms;
+	uint16_t            agc_count;
+	uint8_t             antenna_status;
+	uint8_t             antenna_power;
+	uint8_t             rtc_calib     :1;
+	uint8_t             safe_boot     :1;
+	uint8_t             jamming_state :2;
+	uint8_t             xtal_absent   :1;
+	uint8_t             _reserved0;
+	uint32_t            used_mask;
+	uint8_t             vp[17];
+	uint8_t             jam_indicator;
+	uint8_t             _reserved1[2];
+	uint32_t            pin_irq;
+	uint32_t            pull_high;
+	uint32_t            pull_low;
 };
 
 bool             ublox_port_config(serial_port_t* port, int64_t baudrate);
@@ -127,8 +173,10 @@ ublox_message_t* ublox_next_message(serial_port_t* port);
 
 ublox_checksum_t ublox_compute_checksum(ublox_message_t* message, size_t size);
 
-t_string ublox_header_tostring(struct ublox_header* message);
+t_string         ublox_header_tostring(struct ublox_header* message);
 t_string ublox_navigation_data_tostring(struct ublox_navigation_data* message);
+t_string ublox_monitoring_hardware_tostring(struct ublox_monitoring_hardware* message);
+t_string ublox_monitoring_rf_tostring(struct ublox_monitoring_rf* message);
 
 /**
 @var ublox_header::class
