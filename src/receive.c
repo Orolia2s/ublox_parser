@@ -19,7 +19,7 @@ static void ftq_pop_front_into_array(t_deque* queue, t_array* array, size_t coun
 
 ublox_message_t* ublox_next_message(serial_port_t* port)
 {
-	t_deque* queue = &port->buffer;
+	t_deque* queue = &port->file.buffer;
 	t_array  result[] = {NEW_ARRAY(uint8_t)};
 
 sync:
