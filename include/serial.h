@@ -5,9 +5,8 @@
  * Manipulate a serial port connection
  */
 
+#include "file_input_stream.h"
 #include "serial_options.h"
-
-#include <ft_deque.h>
 
 #include <sys/types.h> // ssize_t
 
@@ -18,15 +17,13 @@
 typedef struct serial_port serial_port_t;
 
 /**
- * Serial port handler, similar to FILE.
+ * Serial port handler, includes a buffer
  */
 struct serial_port
 {
-	serial_options_t options;         /**< Terminal options */
-	t_deque          buffer;          /**< Circular buffer */
-	int              file_descriptor; /**< Underlying file */
-	uint8_t          opened      :1;  /**< Is this file still open ? */
-	uint8_t          got_options :1;  /**< Is @ref options filled ? */
+	ifstream_t       file;           /**< Input file buffered stream */
+	uint8_t          got_options :1; /**< Is @ref options filled ? */
+	serial_options_t options;        /**< Terminal options */
 };
 
 serial_port_t serial_open(const char* port_name);
@@ -39,8 +36,8 @@ speed_t       serial_encode_baudrate(int64_t speed_in_bps);
 
 bool          serial_print_config(serial_port_t* port);
 
-ssize_t       serial_single_read(serial_port_t* port);
-bool          serial_accumulate(serial_port_t* port, size_t n);
+/* @see file_accumulate */
+#define serial_accumulate(/* serial_port_t* */ port, /* size_t */ n) file_accumulate((ifstream_t*)port, n)
 
 /**
  * Use the RAII with serial ports.
@@ -65,9 +62,3 @@ bool          serial_accumulate(serial_port_t* port, size_t n);
  */
 #define serial_ensure_options(PORT) \
 	do { if (!(PORT)->got_options) serial_get_options(PORT); } while (0)
-
-/**
-@var serial_port::buffer
-Good complexity for push_bash and pop_front.
-No need to memmove remaining data to the front.
-*/

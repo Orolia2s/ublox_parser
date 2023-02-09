@@ -57,7 +57,7 @@ PP_SECTION := $(BOLD)
 
 ##@ General
 
-default: help ## When no target is specified, this help is displayed
+default: build ## When no target is specified, build
 
 help: ## Display this help.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nThis Makefile allows one to setup their machine, build, run and test this ublox parser.\n\nUsage:\n  make $(PP_COMMAND)<target>$(EOC)\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  $(PP_COMMAND)%-15s$(EOC) %s\n", $$1, $$2 } /^##@/ { printf "\n$(PP_SECTION)%s$(EOC):\n", substr($$0, 5) } ' $(MAKEFILE_LIST)

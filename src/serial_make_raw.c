@@ -45,7 +45,7 @@ bool serial_make_raw(serial_port_t* port)
 {
 	serial_ensure_options(port);
 	_serial_make_raw(port);
-	if (tcsetattr(port->file_descriptor, TCSANOW, &port->options.termios) != 0)
+	if (tcsetattr(port->file.descriptor, TCSANOW, &port->options.termios) != 0)
 	{
 		log_error("Unable to set the attributes of the terminal: %s", strerror(errno));
 		return false;
