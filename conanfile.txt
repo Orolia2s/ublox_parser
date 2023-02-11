@@ -1,5 +1,5 @@
 [requires]
-libft/2.6
+libft/2.7
 log.c/cci.20200620
 
 [generators]
