@@ -3,18 +3,19 @@
 #include <ft_prepro/tools.h>
 #include <ft_prepro/color.h>
 
-#include <stdio.h>  // printf
+#include <ft_printf.h>
 
 #define WIDTH 30
 
 #ifndef LOG_USE_COLOR
-# define PRINT_BOOL(MODES, FIELD) \
-	printf("    %-*s: %s\n", WIDTH, PP_STR(FIELD), bool2str(MODES->FIELD));
+#   define PRINT_BOOL(MODES, FIELD) \
+        ft_printf("    %-*s: %B\n", WIDTH, PP_STR(FIELD), MODES->FIELD);
 #else
-# define PRINT_BOOL(MODES, FIELD) \
-	printf("    %s%-*s: %s%s\n", \
-	       MODES->FIELD ? COLOR(BOLD) : COLOR(DIM), \
-	       WIDTH, PP_STR(FIELD), bool2str(MODES->FIELD), COLOR(NORMAL));
+#   define PRINT_BOOL(MODES, FIELD)                        \
+        ft_printf("    %s%-*s: %B%s\n",                    \
+                  MODES->FIELD ? COLOR(BOLD) : COLOR(DIM), \
+                  WIDTH, PP_STR(FIELD),                    \
+                  MODES->FIELD, COLOR(NORMAL));
 #endif
 
 #define INPUT_FIELDS \
@@ -36,42 +37,37 @@
 #define CONTROL_CHARACTERS \
 	interrupt, quit, erase, kill, end_of_file, timeout, minimum
 
-static inline const char* bool2str(bool b)
-{
-	return b ? "true" : "false";
-}
-
 static void serial_print_input_modes(const struct serial_input_modes* modes)
 {
-	printf("  input_modes:\n");
+	ft_printf("  input_modes:\n");
 	FOR(EACH(INPUT_FIELDS), PRINT_BOOL, modes);
 }
 
 static void serial_print_output_modes(const struct serial_output_modes* modes)
 {
-	printf("  output_modes:\n");
+	ft_printf("  output_modes:\n");
 	FOR(EACH(OUTPUT_BOOLS), PRINT_BOOL, modes);
 }
 
 static void serial_print_control_modes(const struct serial_control_modes* modes)
 {
-	printf("  control_modes:\n");
-	printf("    %-*s: %i\n", WIDTH, "character_size", 5 + modes->character_size);
+	ft_printf("  control_modes:\n");
+	ft_printf("    %-*s: %i\n", WIDTH, "character_size", 5 + modes->character_size);
 	FOR(EACH(CONTROL_BOOLS), PRINT_BOOL, modes);
 }
 
 static void serial_print_local_modes(const struct serial_local_modes* modes)
 {
-	printf("  local_modes:\n");
+	ft_printf("  local_modes:\n");
 	FOR(EACH(LOCAL_FIELDS), PRINT_BOOL, modes);
 }
 
 #define PRINT_UCHAR(CHARS, NAME) \
-	printf("    %-*s: %#.2hhx\n", WIDTH, PP_STR(NAME), CHARS->NAME);
+	ft_printf("    %-*s: %#.2hhx\n", WIDTH, PP_STR(NAME), CHARS->NAME);
 
 static void serial_print_control_characters(union serial_control_characters* chars)
 {
-	printf("  control_characters:\n");
+	ft_printf("  control_characters:\n");
 	FOR(EACH(CONTROL_CHARACTERS), PRINT_UCHAR, chars);
 }
 
@@ -81,16 +77,16 @@ static void serial_print_control_characters(union serial_control_characters* cha
 bool serial_print_config(serial_port_t* port)
 {
 	serial_ensure_options(port);
-	printf("serial_port_options:\n");
+	ft_printf("serial_port_options:\n");
 	serial_print_input_modes(&port->options.input);
 	serial_print_output_modes(&port->options.output);
 	serial_print_control_modes(&port->options.control);
 	serial_print_local_modes(&port->options.local);
 	serial_print_control_characters(&port->options.control_characters);
-	printf("  baudrate:\n");
-	printf("    %-*s: %hhu\n", WIDTH, "line_discipline", port->options.line_discipline);
-	printf("    %-*s: %li\n", WIDTH, "input",  serial_decode_baudrate(port->options.input_speed));
-	printf("    %-*s: %li\n", WIDTH, "output", serial_decode_baudrate(port->options.output_speed));
-	printf("---\n");
+	ft_printf("  baudrate:\n");
+	ft_printf("    %-*s: %hhu\n", WIDTH, "line_discipline", port->options.line_discipline);
+	ft_printf("    %-*s: %li\n", WIDTH, "input",  serial_decode_baudrate(port->options.input_speed));
+	ft_printf("    %-*s: %li\n", WIDTH, "output", serial_decode_baudrate(port->options.output_speed));
+	ft_printf("---\n");
 	return true;
 }

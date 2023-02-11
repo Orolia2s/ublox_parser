@@ -59,7 +59,6 @@ static int _test_set_speed(int64_t speed_bps, uint8_t initial)
 
 	cfsetspeed(&std.options.termios, serial_encode_baudrate(speed_bps));
 	_ublox_port_set_speed(&mine, speed_bps);
-	//serial_print_config(&std);
 	return !memcmp(&std.options, &mine.options, sizeof(std.options));
 }
 
