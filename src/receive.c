@@ -18,13 +18,13 @@ static void ftq_pop_front_into_array(t_deque* queue, t_array* array, size_t coun
 	array->size += count;
 }
 
-ublox_message_t* ublox_next_message(serial_port_t* port)
+ublox_message_t* ublox_next_message(ifstream_t* file)
 {
-	t_deque* queue = &port->file.buffer;
+	t_deque* queue = &file->buffer;
 	t_array  result[] = {NEW_ARRAY(uint8_t)};
 
 sync:
-	while (serial_accumulate(port, sizeof(ublox_sync_chars)
+	while (file_accumulate(file, sizeof(ublox_sync_chars)
 	                         + ublox_smallest_message_size)
 	       && *(uint8_t*)ftq_first(queue) != ublox_sync_chars[0])
 	{
@@ -45,7 +45,7 @@ sync:
 	ftq_pop_front_into_array(queue, result, sizeof(struct ublox_header));
 
 	ublox_message_t** message = (ublox_message_t**)&result->data;
-	if (!serial_accumulate(port, message[0]->length + sizeof(struct ublox_footer)))
+	if (!file_accumulate(file, message[0]->length + sizeof(struct ublox_footer)))
 	{
 		log_trace(
 			"Unable to read completely a message of class %s, discarding header",
