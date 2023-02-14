@@ -23,7 +23,7 @@ DOC_FOLDER    := doc
 CACHE_FOLDER  := cache
 
 CFLAGS   += -g -O2
-CFLAGS   += -Wall -Wextra --std=c17
+CFLAGS   += -Wall -Wextra --std=c2x
 
 CPPFLAGS += -I $(HEADER_FOLDER)
 CPPFLAGS += $(shell pkg-config --cflags-only-I *.pc)

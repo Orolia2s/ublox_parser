@@ -62,6 +62,7 @@ enum ublox_jamming_state
 	ublox_jamming_state_count
 };
 
+[[ maybe_unused ]]
 static const char* ublox_jamming_state_strings[] = {"unkown", "OK", "warning", "critical"};
 
 enum ublox_antenna_status
@@ -74,4 +75,5 @@ enum ublox_antenna_status
 	ublox_antenna_status_count
 };
 
+[[ maybe_unused ]]
 static const char* ublox_antenna_status_strings[]= {"initializing", "unknown", "OK", "short", "open"};
