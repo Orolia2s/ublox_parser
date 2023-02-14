@@ -1,4 +1,5 @@
 #include "ublox.h"
+#include "ublox_messages.h"
 
 #include <ft_string.h>
 

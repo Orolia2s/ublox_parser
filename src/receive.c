@@ -1,5 +1,6 @@
 #include "serial.h"
 #include "ublox.h"
+#include "ublox_enums.h"
 
 #include <ft_array.h>
 #include <ft_printf.h>
@@ -57,9 +58,6 @@ sync:
 		ublox_checksum_t computed = ublox_compute_checksum(result->data, result->size);
 		ublox_checksum_t expected;
 		ftq_pop_front(queue, &expected, sizeof(expected));
-		log_debug("Found %s message, with checksum %#.4hx == %#.4hx ?",
-		          ublox_class_strings[message[0]->class],
-		          *(uint16_t*)&computed, *(uint16_t*)&expected);
 		if (*(uint16_t*)&computed != *(uint16_t*)&expected)
 		{
 			log_warn("Discarding message of type %s with invalid checksum",
