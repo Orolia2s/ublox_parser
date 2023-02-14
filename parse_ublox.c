@@ -1,5 +1,7 @@
 #include "serial.h"
 #include "ublox.h"
+#include "ublox_enums.h"
+#include "ublox_messages.h"
 
 #include <argp.h>
 #include <fcntl.h>           // open
@@ -49,8 +51,8 @@ void parse_ublox(const char* port_name, bool passive)
 		}
 		else
 		{
-			// RAII(t_string) str = ublox_header_tostring(message);
-			// log_info("{%s}", cstring(&str));
+			RAII(t_string) str = ublox_header_tostring(message);
+			log_info("{%s}", cstring(&str));
 		}
 		free(message);
 	}

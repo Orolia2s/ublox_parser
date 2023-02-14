@@ -1,4 +1,5 @@
 #include "ublox.h"
+#include "ublox_enums.h"
 
 #include <ft_string.h>
 
