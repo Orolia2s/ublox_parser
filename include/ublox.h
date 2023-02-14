@@ -73,8 +73,8 @@ DECLARE_ENUM_WITH_VALUES(ublox_class,
 );
 
 DECLARE_ENUM_WITH_VALUES(ublox_monitoring_message,
-	(HW /**< Hardware status */, 0x09),
-	(RF /**< RF information */, 0x38)
+	(HW /**< Hardware status              */, 0x09),
+	(RF /**< Radio Frequency information  */, 0x38)
 );
 
 /**
@@ -92,6 +92,27 @@ DECLARE_ENUM_WITH_VALUES(ublox_constellation,
 );
 
 // clang-format on
+
+enum ublox_mon_rf_jamming_state
+{
+	UBX_MON_RF_JAMMING_UNKNOWN, /**< unknown or feature disabled     */
+	UBX_MON_RF_JAMMING_OK,      /**< no significant jamming          */
+	UBX_MON_RF_JAMMING_WARNING, /**< interference visible but fix OK */
+	UBX_MON_RF_JAMMING_CRITICAL /**< interference visible and no fix */
+};
+
+static const char* ublox_mon_rf_jamming_state_strings[] = {"unkown", "OK", "warning", "critical"};
+
+enum ublox_mon_rf_antenna_status
+{
+	UBLOX_MON_RF_ANTENNA_INIT,
+	UBLOX_MON_RF_ANTENNA_DONTKNOW,
+	UBLOX_MON_RF_ANTENNA_OK,
+	UBLOX_MON_RF_ANTENNA_SHORT,
+	UBLOX_MON_RF_ANTENNA_OPEN
+};
+
+static const char* ublox_mon_rf_antenna_status_strings[]= {"initilizing", "unknown", "OK", "short", "open"};
 
 /**
  * Broadcast Navigation Data Subframe.
@@ -116,24 +137,30 @@ struct ublox_navigation_data
 	uint8_t             _reserved;
 };
 
+/**
+ * Radio Frequency Information.
+ *
+ * Information for each RF block.
+ * There are as many RF blocks reported as bands supported by this receiver.
+ */
 struct ublox_monitoring_rf
 {
 	struct ublox_header header;
-	uint8_t             version;
-	uint8_t             n_blocks;
-	uint8_t             _reserved0[2];
+	uint8_t             version;     /**< Message version (=0 in this case) */
+	uint8_t             block_count; /**< Number of RF blocks included */
+	uint16_t            _reserved;
 };
 
 struct ublox_monitoring_rf_block
 {
-	uint8_t  block_id;
-	uint8_t  jamming_state :2;
-	uint8_t  antenna_status;
-	uint8_t  antenna_power;
-	uint32_t post_status;
-	uint8_t  _reserved1[4];
-	uint16_t noise_per_ms;
-	uint16_t agc_count;
+	uint8_t  id;               /**< RF block ID */
+	uint8_t  jamming_state :2; /**< Output from Jamming/Interference Monitor */
+	uint8_t  antenna_status;   /**< Status of the antenna supervisor state machine */
+	uint8_t  antenna_power;    /**< Current power status of the antenna */
+	uint32_t post_status;      /**< Power-On Self-Test status word */
+	uint32_t _reserved1;
+	uint16_t noise_per_ms; /**< Noise level as measured by the GPS core */
+	uint16_t agc_count;    /**< Automatic Gain Control */
 	uint8_t  jam_indicator;
 	int8_t   ofs_i;
 	uint8_t  mag_i;
@@ -171,12 +198,27 @@ bool             ublox_port_config(serial_port_t* port, int64_t baudrate);
 
 ublox_message_t* ublox_next_message(serial_port_t* port);
 
-ublox_checksum_t ublox_compute_checksum(ublox_message_t* message, size_t size);
+ublox_checksum_t ublox_compute_checksum(const ublox_message_t* message, size_t size);
 
-t_string         ublox_header_tostring(struct ublox_header* message);
-t_string ublox_navigation_data_tostring(struct ublox_navigation_data* message);
-t_string ublox_monitoring_hardware_tostring(struct ublox_monitoring_hardware* message);
-t_string ublox_monitoring_rf_tostring(struct ublox_monitoring_rf* message);
+t_string ublox_header_tostring(const struct ublox_header* message);
+t_string ublox_navigation_data_tostring(const struct ublox_navigation_data* message);
+t_string ublox_monitoring_hardware_tostring(const struct ublox_monitoring_hardware* message);
+t_string ublox_monitoring_rf_tostring(const struct ublox_monitoring_rf* message);
+
+/**
+@var ublox_monitoring_rf_block::id
+ - `0`: L1 band
+ - `1`: L2 or L5 band (depending on product configuration)
+
+@var ublox_monitoring_rf_block::jamming_state
+@see ublox_mon_rf_jamming_state
+This ﬂag is deprecated in protocol versions that support `UBX-SEC-SIG` (version 0x02);
+instead `jammingState` in `UBX-SEC-SIG` should be monitored.
+
+@var ublox_monitoring_rf_block::agc_count
+The AGC monitor counts the number of times the signal level crosses a certain threshold, indicated
+by the signals SIGHI and SIGLO
+*/
 
 /**
 @var ublox_header::class
