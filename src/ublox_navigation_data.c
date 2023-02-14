@@ -4,7 +4,7 @@
 
 #define append(S, ...) string_append_format(&S, __VA_ARGS__)
 
-t_string ublox_navigation_data_tostring(struct ublox_navigation_data* message)
+t_string ublox_navigation_data_tostring(const struct ublox_navigation_data* message)
 {
 	t_string result = ublox_header_tostring(&message->header);
 

@@ -4,7 +4,7 @@
 
 #define append(S, ...) string_append_format(&S, __VA_ARGS__)
 
-t_string ublox_monitoring_hardware_tostring(struct ublox_monitoring_hardware* message)
+t_string ublox_monitoring_hardware_tostring(const struct ublox_monitoring_hardware* message)
 {
 	t_string result = ublox_header_tostring(&message->header);
 
@@ -24,7 +24,7 @@ t_string ublox_monitoring_hardware_tostring(struct ublox_monitoring_hardware* me
 	append(result, ", vp: [");
 	for (int i = 0; i < 17; i++)
 	{
-		append(result, ", used_mask: %#.2hhx", message->vp[i]);
+		append(result, "%#.2hhx, ", message->vp[i]);
 	}
 	append(result, "] , jam_indicator: %hhu", message->jam_indicator);
 	append(result, ", pin_irq: %#.8x", message->pin_irq);
