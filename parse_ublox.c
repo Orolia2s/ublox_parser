@@ -2,6 +2,7 @@
 #include "ublox.h"
 #include "ublox_enums.h"
 #include "ublox_messages.h"
+#include "ublox_reader.h"
 
 #include <argp.h>
 #include <fcntl.h>           // open
@@ -13,6 +14,33 @@
 #include <stdio.h>  // printf
 #include <stdlib.h> // free
 
+void ublox_printer(ublox_message_t* message)
+{
+	if (message->class == RXM && message->type == 0x13)
+	{
+		RAII(t_string)
+			str = ublox_navigation_data_tostring((struct ublox_navigation_data*)message);
+		log_info("{%s}", cstring(&str));
+	}
+	else if (message->class == MON && message->type == HW)
+	{
+		RAII(t_string)
+			str = ublox_monitoring_hardware_tostring((struct ublox_monitoring_hardware*)message);
+		log_info("{%s}", cstring(&str));
+	}
+	else if (message->class == MON && message->type == RF)
+	{
+		RAII(t_string)
+			str = ublox_monitoring_rf_tostring((struct ublox_monitoring_rf*)message);
+		log_info("{%s}", cstring(&str));
+	}
+	else
+	{
+		RAII(t_string) str = ublox_header_tostring(message);
+		log_info("{%s}", cstring(&str));
+	}
+}
+
 /**
  * Receive, parse and display all ublox messages found on the serial port.
  *
@@ -21,7 +49,6 @@
  */
 void parse_ublox(const char* port_name, bool passive)
 {
-	ublox_message_t* message;
 	Serial           port = serial_open(port_name);
 
 	if (port.file.descriptor < 0
@@ -29,34 +56,9 @@ void parse_ublox(const char* port_name, bool passive)
 		return ;
 	serial_print_config(&port);
 
-	while ((message = ublox_next_message(&port)) != NULL)
-	{
-		if (message->class == RXM && message->type == 0x13)
-		{
-			RAII(t_string)
-			str = ublox_navigation_data_tostring((struct ublox_navigation_data*)message);
-			log_info("{%s}", cstring(&str));
-		}
-		else if (message->class == MON && message->type == HW)
-		{
-			RAII(t_string)
-			str = ublox_monitoring_hardware_tostring((struct ublox_monitoring_hardware*)message);
-			log_info("{%s}", cstring(&str));
-		}
-		else if (message->class == MON && message->type == RF)
-		{
-			RAII(t_string)
-			str = ublox_monitoring_rf_tostring((struct ublox_monitoring_rf*)message);
-			log_info("{%s}", cstring(&str));
-		}
-		else
-		{
-			RAII(t_string) str = ublox_header_tostring(message);
-			log_info("{%s}", cstring(&str));
-		}
-		free(message);
-	}
-
+	ublox_reader_t reader = ublox_reader_init(&port.file);
+	ublox_subscribe(&reader, ublox_printer);
+	ublox_reader_loop(&reader);
 } /* <- port will be closed at this point */
 
 const char* argp_program_version     = "ublox_parser " PP_STR(VERSION);

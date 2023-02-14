@@ -7,6 +7,7 @@
  * This code assumes a Little Endian host.
  */
 
+#include "file_input_stream.h"
 #include "serial.h"
 
 #include <ft_prepro/enum.h>
@@ -52,7 +53,7 @@ struct ublox_footer
 
 bool             ublox_port_config(serial_port_t* port, int64_t baudrate);
 
-ublox_message_t* ublox_next_message(serial_port_t* port);
+ublox_message_t* ublox_next_message(ifstream_t* port);
 
 ublox_checksum_t ublox_compute_checksum(const ublox_message_t* message, size_t size);
 
