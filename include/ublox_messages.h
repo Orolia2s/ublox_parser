@@ -20,18 +20,16 @@
  */
 struct ublox_navigation_data
 {
-	struct ublox_header header;
-	uint8_t             constellation;     /**< GNSS identifier */
-	uint8_t             satellite;         /**< Satellite identifier */
-	uint8_t             signal;            /**< Signal identifier */
-	uint8_t             glonass_frequency; /**< Only used for GLONASS */
-	/** The number of data words contained in this message. */
-	uint8_t             word_count;
-	/** The tracking channel number the message was received on. */
-	uint8_t             channel;
-	/** Message version (=2 for this version). */
-	uint8_t             version;
-	uint8_t             _reserved;
+	struct ublox_header header;/**< Inherit from ublox message base struct */
+
+	uint8_t constellation;     /**< GNSS identifier */
+	uint8_t satellite;         /**< Satellite identifier */
+	uint8_t signal;            /**< Signal identifier */
+	uint8_t glonass_frequency; /**< Only used for GLONASS */
+	uint8_t word_count;        /**< The number of data words contained in this message. */
+	uint8_t channel;           /**< The tracking channel number the message was received on. */
+	uint8_t version;           /**< Message version (=2 for this version). */
+	uint8_t _reserved;
 };
 
 /**
@@ -42,10 +40,11 @@ struct ublox_navigation_data
  */
 struct ublox_monitoring_rf
 {
-	struct ublox_header header;
-	uint8_t             version;     /**< Message version (=0 in this case) */
-	uint8_t             block_count; /**< Number of RF blocks included */
-	uint16_t            _reserved;
+	struct ublox_header header; /**< Inherit from ublox message base struct */
+
+	uint8_t  version;     /**< Message version (=0 in this case) */
+	uint8_t  block_count; /**< Number of RF blocks included */
+	uint16_t _reserved;
 };
 
 struct ublox_monitoring_rf_block
@@ -58,7 +57,7 @@ struct ublox_monitoring_rf_block
 	uint32_t _reserved1;
 	uint16_t noise_per_ms;    /**< Noise level as measured by the GPS core */
 	uint16_t agc_count;       /**< Automatic Gain Control */
-	uint8_t  jam_suppression; /**< Continuous Wave interference suppression level */
+	uint8_t  jam_level;       /**< Continuous Wave interference suppression level */
 	int8_t   offset_i;        /**< Imbalance of the I-part of the complex signal */
 	uint8_t  magnitude_i;     /**< Magnitude of the I-Part of the complex signal */
 	int8_t   offset_q;        /**< Imbalance of the Q-part of the complex signal */
@@ -68,27 +67,33 @@ struct ublox_monitoring_rf_block
 
 struct ublox_monitoring_hardware
 {
-	struct ublox_header header;
-	uint32_t            pin_sel;
-	uint32_t            pin_bank;
-	uint32_t            pin_dir;
-	uint32_t            pin_val;
-	uint16_t            noise_per_ms;
-	uint16_t            agc_count;
-	uint8_t             antenna_status;
-	uint8_t             antenna_power;
-	uint8_t             rtc_calib     :1;
-	uint8_t             safe_boot     :1;
-	uint8_t             jamming_state :2;
-	uint8_t             xtal_absent   :1;
-	uint8_t             _reserved0;
-	uint32_t            used_mask;
-	uint8_t             vp[17];
-	uint8_t             jam_indicator;
-	uint8_t             _reserved1[2];
-	uint32_t            pin_irq;
-	uint32_t            pull_high;
-	uint32_t            pull_low;
+	struct ublox_header header; /**< Inherit from ublox message base struct */
+
+	uint32_t pins_selected;  /**< Mask of pins set as peripheral/PIO */
+	uint32_t pins_bank;      /**< Mask of pins set as bank A/B */
+	uint32_t pins_direction; /**< Mask of pins set as input/output */
+	uint32_t pins_value;     /**< Mask of pins value low/high */
+	uint16_t noise_per_ms;   /**< Noise level as measured by the GPS core */
+	uint16_t agc_count;      /**< Automatic Gain Control */
+	/** Status of the antenna supervisor state machine */
+	uint8_t  antenna_status;
+	uint8_t  antenna_power;        /**< Current power status of the antenna */
+	uint8_t  is_rtc_calibrated :1; /**< is the Real-Time Clock calibrated ? */
+	uint8_t  in_safe_boot_mode :1;
+	/** Output from Jamming/Interference Monitor */
+	uint8_t  jamming_state     :2;
+	/** Has the real-time clock's crystal been determined to be absent ? */
+	uint8_t  is_crystal_absent :1;
+	uint8_t  _reserved0;
+	/** Mask of pins that are used by the virtual pin manager */
+	uint32_t used_mask;
+	/** Array of pin mappings for each of the 17 physical pins */
+	uint8_t  virtual_pins[17];
+	uint8_t  jam_level; /**< Continuous Wave interference suppression level */
+	uint8_t  _reserved1[2];
+	uint32_t pins_interrupt; /**< Mask of pins value using the PIO Irq */
+	uint32_t pins_pull_high; /**< Mask of pins value using the PIO pull high resistor */
+	uint32_t pins_pull_low;  /**< Mask of pins value using the PIO pull low resistor */
 };
 
 t_string ublox_navigation_data_tostring(const struct ublox_navigation_data* message);
@@ -101,11 +106,17 @@ t_string ublox_monitoring_rf_tostring(const struct ublox_monitoring_rf* message)
  - `1`: L2 or L5 band (depending on product configuration)
 
 @var ublox_monitoring_rf_block::jamming_state
-@see ublox_mon_rf_jamming_state
+@see ublox_jamming_state
 This ﬂag is deprecated in protocol versions that support `UBX-SEC-SIG` (version 0x02);
 instead `jammingState` in `UBX-SEC-SIG` should be monitored.
 
 @var ublox_monitoring_rf_block::agc_count
+The AGC monitor counts the number of times the signal level crosses a certain threshold, indicated
+by the signals SIGHI and SIGLO
+*/
+
+/**
+@var ublox_monitoring_hardware::agc_count
 The AGC monitor counts the number of times the signal level crosses a certain threshold, indicated
 by the signals SIGHI and SIGLO
 */

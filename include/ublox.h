@@ -10,7 +10,6 @@
 #include "file_input_stream.h"
 #include "serial.h"
 
-#include <ft_prepro/enum.h>
 #include <ft_string.h>
 
 #include <sys/types.h> // size_t

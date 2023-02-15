@@ -13,7 +13,7 @@
  * In case of error when calling close, there is absolutely nothing interesting
  * that can be done beyond reporting it, so it is not propagated.
  */
-void serial_close(ifstream_t* file)
+void file_close(ifstream_t* file)
 {
 	log_trace("%s(%i)", __FUNCTION__, file->descriptor);
 	if (file->buffer.data)

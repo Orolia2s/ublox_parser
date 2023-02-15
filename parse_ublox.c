@@ -46,20 +46,32 @@ void ublox_printer(ublox_message_t* message)
  *
  * @param passive: When passive, do not change the port config, only display it
  * and try to read.
+ * @param is_file: Do not try to access the terminal options
  */
-void parse_ublox(const char* port_name, bool passive)
+void parse_ublox(const char* file_name, bool passive, bool is_file)
 {
-	Serial           port = serial_open(port_name);
+	serial_port_t port;
 
-	if (port.file.descriptor < 0
-	    || (!passive && ublox_port_config(&port, 115200) == false))
+	if (is_file)
+		port.file = file_open(file_name, O_RDONLY);
+	else
+	{
+		port = serial_open(file_name);
+
+		if (!passive && ublox_port_config(&port, 115200) == false)
+			return ;
+		serial_print_config(&port);
+
+	}
+
+	if (port.file.descriptor < 0)
 		return ;
-	serial_print_config(&port);
 
-	ublox_reader_t reader = ublox_reader_init(&port.file);
+	Reader        reader = ublox_reader_init(&port.file);
+
 	ublox_subscribe(&reader, ublox_printer);
 	ublox_reader_loop(&reader);
-} /* <- port will be closed at this point */
+}
 
 const char* argp_program_version     = "ublox_parser " PP_STR(VERSION);
 const char* argp_program_bug_address = "<antoine.gagniere@orolia2s.com>";
@@ -68,12 +80,14 @@ static char args_doc[] = "[PATH]";
 
 static struct argp_option options[] = {
     {"passive", 'p', 0, OPTION_ARG_OPTIONAL, "Do not change the port configuration, only display it.", 1},
+    {"file", 'f', 0, OPTION_ARG_OPTIONAL, "Input is not a serial port but a file", 1},
     {0}
 };
 
 struct arguments
 {
 	bool is_passive;
+	bool is_file;
 };
 
 static error_t parse_opt(int key, char* arg, struct argp_state* state)
@@ -82,9 +96,10 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
 	switch (key)
 	{
 	case 'p': arguments->is_passive = true; break;
+	case 'f': arguments->is_file = true; break;
 	case ARGP_KEY_ARG:
 		if (arg)
-			parse_ublox(arg, arguments->is_passive);
+			parse_ublox(arg, arguments->is_passive, arguments->is_file);
 		return 0;
 	default: return ARGP_ERR_UNKNOWN;
 	}
@@ -95,7 +110,7 @@ static struct argp argp = {options, parse_opt, args_doc, doc, 0, 0, 0};
 
 int                main(int arg_count, char** arg_values)
 {
-	struct arguments arguments = {.is_passive = false};
+	struct arguments arguments = {.is_passive = false, .is_file = false};
 
 	argp_parse(&argp, arg_count, arg_values, 0, 0, &arguments);
 	return 0;
