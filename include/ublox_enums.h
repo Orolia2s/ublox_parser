@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ft_prepro/enum.h>
+
 /**
  * @file ublox_enums.h
  */
@@ -77,3 +79,14 @@ enum ublox_antenna_status
 
 [[ maybe_unused ]]
 static const char* ublox_antenna_status_strings[]= {"initializing", "unknown", "OK", "short", "open"};
+
+enum ublox_antenna_power
+{
+	UBLOX_ANTENNA_OFF,
+	UBLOX_ANTENNA_ON,
+	UBLOX_ANTENNA_POWER_UNKNOWN,
+	ublox_antenna_power_count
+};
+
+[[ maybe_unused ]]
+static const char* ublox_antenna_power_strings[]= {"OFF", "ON", "unknown"};

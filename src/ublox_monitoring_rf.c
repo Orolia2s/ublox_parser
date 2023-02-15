@@ -1,25 +1,27 @@
 #include "ublox.h"
+#include "ublox_enums.h"
 #include "ublox_messages.h"
 
-#include <ft_string.h>
 #include <ft_prepro/tools.h>
+#include <ft_string.h>
+
 #include <inttypes.h>
 
 #define append(S, ...) string_append_format(&S, __VA_ARGS__)
-#define append_field(S, TYPE, MSG, FIELD) append(S, ", " PP_STR(FIELD) ": %" TYPE, MSG->FIELD);
+#define append_field(S, TYPE, MSG, FIELD) append(S, ", " PP_STR(FIELD) ": %" TYPE, MSG->FIELD)
 
 t_string ublox_monitoring_rf_block_tostring(const struct ublox_monitoring_rf_block* message)
 {
 	t_string result = NEW_STRING;
 
 	append(result, "ID: %" PRIu8 , message->id);
-	append_field(result, PRIu8, message, jamming_state);
-	append_field(result, PRIu8, message, antenna_status);
-	append_field(result, PRIu8, message, antenna_power);
+	append(result, ", jamming_state: %s", ublox_jamming_state_strings[message->jamming_state]);
+	append(result, ", antenna_status: %s", ublox_antenna_status_strings[message->antenna_status]);
+	append(result, ", antenna_power: %s", ublox_antenna_power_strings[message->antenna_power]);
 	append_field(result, PRIu32, message, post_status);
 	append_field(result, PRIu16, message, noise_per_ms);
 	append_field(result, PRIu16, message, agc_count);
-	append_field(result, PRIu8, message, jam_suppression);
+	append_field(result, PRIu8, message, jam_level);
 	append_field(result, PRIi8, message, offset_i);
 	append_field(result, PRIu8, message, magnitude_i);
 	append_field(result, PRIi8, message, offset_q);
