@@ -40,6 +40,13 @@ DECLARE_ENUM_WITH_VALUES(ublox_monitoring_message,
 );
 
 /**
+ * Possible messages in the RXM class
+ */
+DECLARE_ENUM_WITH_VALUES(ublox_receiver_message,
+	(SFRBX /**< Broadcast navigation data subframe */, 0x13)
+);
+
+/**
  * Possible values of @ref ublox_navigation_data::constellation
  */
 DECLARE_ENUM_WITH_VALUES(ublox_constellation,
