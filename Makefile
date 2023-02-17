@@ -139,7 +139,6 @@ $(EXECUTABLE): $(MAIN_OBJ) $(LIBRARY) # Link the executable
 $(OBJECTS): $(CACHE_FOLDER)/%.o: $(SOURCE_FOLDER)/%.c # declare the dependency between objects in cache and sources in src.
 $(MAIN_OBJ): $(CACHE_FOLDER)/%.o: %.c # declare the dependency of the object containing the main
 
-
 $(LIBRARY): $(OBJECTS) # Group all the compiled objects into an indexed archive
 	$(AR) rcs $@ $^
 
@@ -153,6 +152,10 @@ $(MAN) $(HTML) $(LATEX)/Makefile: $(DOC_FOLDER)/Doxyfile $(SOURCES) include/*.h 
 %.pc: # Warm about missing pkg-config file
 	@$(error Run ./setup.sh first !)
 
+# When a rule is expanded, both the target and the prerequisites
+# are immediately evaluated. Enabling a second expansion allows
+# a prerequisite to use automatic variables like $@, $*, etc
 .SECONDEXPANSION:
+
 $(OBJECTS) $(MAIN_OBJ): | $$(@D) libft.pc # Compile a single object
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@

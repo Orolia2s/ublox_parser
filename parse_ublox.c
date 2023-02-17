@@ -20,24 +20,24 @@ void ublox_printer(ublox_message_t* message)
 	{
 		RAII(t_string)
 			str = ublox_navigation_data_tostring((struct ublox_navigation_data*)message);
-		log_info("{%s}", cstring(&str));
+		printf("{%s}\n---\n", cstring(&str));
 	}
 	else if (message->class == MON && message->type == HW)
 	{
 		RAII(t_string)
 			str = ublox_monitoring_hardware_tostring((struct ublox_monitoring_hardware*)message);
-		log_info("{%s}", cstring(&str));
+		printf("{%s}\n---\n", cstring(&str));
 	}
 	else if (message->class == MON && message->type == RF)
 	{
 		RAII(t_string)
 			str = ublox_monitoring_rf_tostring((struct ublox_monitoring_rf*)message);
-		log_info("{%s}", cstring(&str));
+		printf("{%s}\n---\n", cstring(&str));
 	}
 	else
 	{
 		RAII(t_string) str = ublox_header_tostring(message);
-		log_info("{%s}", cstring(&str));
+		printf("{%s}\n---\n", cstring(&str));
 	}
 }
 
@@ -112,6 +112,7 @@ int                main(int arg_count, char** arg_values)
 {
 	struct arguments arguments = {.is_passive = false, .is_file = false};
 
+	printf("---\n");
 	argp_parse(&argp, arg_count, arg_values, 0, 0, &arguments);
 	return 0;
 }
