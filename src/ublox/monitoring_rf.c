@@ -8,7 +8,9 @@
 #include <inttypes.h>
 
 #define append(S, ...) string_append_format(&S, __VA_ARGS__)
-#define append_field(S, TYPE, MSG, FIELD) append(S, ", " PP_STR(FIELD) ": %" TYPE, MSG->FIELD)
+#define _append_field2(STRING, MESSAGE, TYPE, FIELD) append(STRING, ", " PP_STR(FIELD) ": %" TYPE, MESSAGE->FIELD);
+#define _append_field1(STRING, MESSAGE, PAIR) _append_field2(STRING, MESSAGE, PAIR)
+#define append_field(STRING, MESSAGE, PAIR) _append_field1(STRING, MESSAGE, ID PAIR)
 
 t_string ublox_monitoring_rf_block_tostring(const struct ublox_monitoring_rf_block* message)
 {
@@ -18,14 +20,15 @@ t_string ublox_monitoring_rf_block_tostring(const struct ublox_monitoring_rf_blo
 	append(result, ", jamming_state: %s", ublox_jamming_state_strings[message->jamming_state]);
 	append(result, ", antenna_status: %s", ublox_antenna_status_strings[message->antenna_status]);
 	append(result, ", antenna_power: %s", ublox_antenna_power_strings[message->antenna_power]);
-	append_field(result, PRIu32, message, post_status);
-	append_field(result, PRIu16, message, noise_per_ms);
-	append_field(result, PRIu16, message, agc_count);
-	append_field(result, PRIu8, message, jam_level);
-	append_field(result, PRIi8, message, offset_i);
-	append_field(result, PRIu8, message, magnitude_i);
-	append_field(result, PRIi8, message, offset_q);
-	append_field(result, PRIu8, message, magnitude_q);
+	FOR(EACH((PRIu32, post_status),
+	         (PRIu16, noise_per_ms),
+	         (PRIu16, agc_count),
+	         (PRIu8,  jam_level),
+	         (PRIi8,  offset_i),
+	         (PRIu8,  magnitude_i),
+	         (PRIi8,  offset_q),
+	         (PRIu8,  magnitude_q)),
+	    append_field, result, message);
 	return result;
 }
 
@@ -35,8 +38,8 @@ t_string ublox_monitoring_rf_tostring(const struct ublox_monitoring_rf* message)
 	const struct ublox_monitoring_rf_block* block = (const struct ublox_monitoring_rf_block*)(message + 1);
 	const struct ublox_monitoring_rf_block* const blocks_end = block + message->block_count;
 
-	append_field(result, PRIu8, message, version);
-	append_field(result, PRIu8, message, block_count);
+	append_field(result, message, (PRIu8, version));
+	append_field(result, message, (PRIu8, block_count));
 	append(result, ", blocks: [");
 	while (block < blocks_end)
 	{
