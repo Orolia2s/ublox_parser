@@ -16,37 +16,30 @@ t_string ublox_monitoring_hardware_tostring(const struct ublox_monitoring_hardwa
 {
 	t_string result = ublox_header_tostring(&message->header);
 
-	FOR(EACH(
-		    ("#.8" PRIx32, pins_selected),
-		    ("#.8" PRIx32, pins_bank),
-		    ("#.8" PRIx32, pins_direction),
-		    ("#.8" PRIx32, pins_value),
-		    (PRIu16, noise_per_ms),
-		    (PRIu16, agc_count)
-		    ), append_field, result, message);
-	//append_field(result, "#.8" PRIx32, message, pin_sel);
-	//append_field(result, "#.8" PRIx32, message, pin_bank);
-	//append_field(result, "#.8" PRIx32, message, pin_dir);
-	//append_field(result, "#.8" PRIx32, message, pin_val);
-	//append_field(result, PRIu16, message, noise_per_ms);
-	//append_field(result, PRIu16, message, agc_count);
+	FOR(EACH(("#.8" PRIx32, pins_selected),
+	         ("#.8" PRIx32, pins_bank),
+	         ("#.8" PRIx32, pins_direction),
+	         ("#.8" PRIx32, pins_value),
+	         (PRIu16,       noise_per_ms),
+	         (PRIu16,       agc_count)),
+	    append_field, result, message);
 	append(result, ", antenna_status: %s", ublox_antenna_status_strings[message->antenna_status]);
-	append(result, ", antenna_power: %s", ublox_antenna_power_strings[message->antenna_power]);
-//	append_field(result, PRIu16, message, is_rtc_calibrated);
-	/*
-	append(result, ", safe_boot: %b", message->safe_boot);
-	append(result, ", jamming_state: %hhu", message->jamming_state);
-	append(result, ", xtal_absent: %b", message->xtal_absent);
-	append(result, ", used_mask: %#.8x", message->used_mask);
+	append(result, ", antenna_power: %s",  ublox_antenna_power_strings[message->antenna_power]);
+	FOR(EACH(("B", is_rtc_calibrated),
+	         ("B", in_safe_boot_mode)),
+	    append_field, result, message);
+	append(result, ", %s", ublox_jamming_state_strings[message->jamming_state]);
+	FOR(EACH(("B", is_crystal_absent),
+	         ("#.8" PRIx32, used_mask)),
+	    append_field, result, message);
 	append(result, ", vp: [");
-	for (int i = 0; i < 17; i++)
-	{
-		append(result, "%#.2hhx, ", message->vp[i]);
-	}
-	append(result, "] , jam_indicator: %hhu", message->jam_indicator);
-	append(result, ", pin_irq: %#.8x", message->pin_irq);
-	append(result, ", pull_high: %#.8x", message->pull_high);
-	append(result, ", pull_low: %#.8x", message->pull_low);
-	*/
+	for (int i = 0; i < 16; i++)
+		append(result, "%#.2" PRIx8 ", ", message->virtual_pins[i]);
+	append(result, "%#.2" PRIx8 "]", message->virtual_pins[16]);
+	FOR(EACH((PRIu8, jam_level),
+	         ("#.8" PRIx32, pins_interrupt),
+	         ("#.8" PRIx32, pins_pull_high),
+	         ("#.8" PRIx32, pins_pull_low)),
+	    append_field, result, message);
 	return result;
 }
