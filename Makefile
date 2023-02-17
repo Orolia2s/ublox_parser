@@ -38,9 +38,11 @@ LDLIBS   += -l $(NAME)
 LDFLAGS  += $(shell pkg-config --libs-only-L *.pc)
 LDLIBS   += $(shell pkg-config --libs-only-l *.pc)
 
-SOURCES  := $(shell find $(SOURCE_FOLDER) -name '*.c')
+SOURCES  != find $(SOURCE_FOLDER) -name '*.c'
 OBJECTS  := $(SOURCES:$(SOURCE_FOLDER)/%.c=$(CACHE_FOLDER)/%.o)
 MAIN_OBJ := $(CACHE_FOLDER)/parse_ublox.o
+
+SOURCE_SUBFOLDERS != find $(SOURCE_FOLDER) -type d
 
 PDF   := $(DOC_FOLDER)/latex/refman.pdf
 HTML  := $(DOC_FOLDER)/html/index.html
@@ -128,8 +130,8 @@ fclean: clean ## Remove all generated files
 
 include $(wildcard $(OBJECTS:.o=.d)) # To know on which header each .o depends
 
-$(CACHE_FOLDER): # Create the cache folder
-	mkdir $@
+$(SOURCE_SUBFOLDERS:$(SOURCE_FOLDER)%=$(CACHE_FOLDER)%): # Create the cache folder
+	mkdir -p $@
 
 $(EXECUTABLE): $(MAIN_OBJ) $(LIBRARY) # Link the executable
 	$(CC) $(CFLAGS) $< $(LDFLAGS) $(LDLIBS) -o $@
@@ -137,8 +139,6 @@ $(EXECUTABLE): $(MAIN_OBJ) $(LIBRARY) # Link the executable
 $(OBJECTS): $(CACHE_FOLDER)/%.o: $(SOURCE_FOLDER)/%.c # declare the dependency between objects in cache and sources in src.
 $(MAIN_OBJ): $(CACHE_FOLDER)/%.o: %.c # declare the dependency of the object containing the main
 
-$(OBJECTS) $(MAIN_OBJ): | $(CACHE_FOLDER) libft.pc # Compile a single object
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 $(LIBRARY): $(OBJECTS) # Group all the compiled objects into an indexed archive
 	$(AR) rcs $@ $^
@@ -152,3 +152,7 @@ $(MAN) $(HTML) $(LATEX)/Makefile: $(DOC_FOLDER)/Doxyfile $(SOURCES) include/*.h 
 
 %.pc: # Warm about missing pkg-config file
 	@$(error Run ./setup.sh first !)
+
+.SECONDEXPANSION:
+$(OBJECTS) $(MAIN_OBJ): | $$(@D) libft.pc # Compile a single object
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
