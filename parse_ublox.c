@@ -16,19 +16,19 @@
 
 void ublox_printer(ublox_message_t* message)
 {
-	if (message->class == RXM && message->type == 0x13)
+	if (message->group == RXM && message->type == 0x13)
 	{
 		RAII(t_string)
 			str = ublox_navigation_data_tostring((struct ublox_navigation_data*)message);
 		printf("{%s}\n---\n", cstring(&str));
 	}
-	else if (message->class == MON && message->type == HW)
+	else if (message->group == MON && message->type == HW)
 	{
 		RAII(t_string)
 			str = ublox_monitoring_hardware_tostring((struct ublox_monitoring_hardware*)message);
 		printf("{%s}\n---\n", cstring(&str));
 	}
-	else if (message->class == MON && message->type == RF)
+	else if (message->group == MON && message->type == RF)
 	{
 		RAII(t_string)
 			str = ublox_monitoring_rf_tostring((struct ublox_monitoring_rf*)message);
