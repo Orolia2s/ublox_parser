@@ -15,6 +15,7 @@ VERSION       := $(shell git tag --sort '-version:refname' --merged | head -1)
 
 EXECUTABLE    := $(NAME).exe
 LIBRARY       := lib$(NAME).a
+SHARED        := lib$(NAME).so
 
 SOURCE_FOLDER := src
 HEADER_FOLDER := include
@@ -22,16 +23,14 @@ TEST_FOLDER   := test
 DOC_FOLDER    := doc
 CACHE_FOLDER  := cache
 
-CFLAGS   += -g -O2
-CFLAGS   += -Wall -Wextra --std=c2x
+CFLAGS   += -Wall -Wextra
 
 CPPFLAGS += -I $(HEADER_FOLDER)
-CPPFLAGS += $(shell pkg-config --cflags-only-I *.pc)
 CPPFLAGS += -MMD
+CPPFLAGS += $(shell pkg-config --cflags-only-I *.pc)
 CPPFLAGS += -DVERSION="$(VERSION)"
-CPPFLAGS += -DLOG_USE_COLOR
 # _DEFAULT_SOURCE is needed for cfmakeraw
-CPPFLAGS += -D_DEFAULT_SOURCE
+#CPPFLAGS += -D_DEFAULT_SOURCE
 
 LDFLAGS  += -L .
 LDLIBS   += -l $(NAME)
@@ -81,14 +80,16 @@ info: ## Print the project's name, version, copyright notice and author
 
 ##@ Building
 
-build: $(EXECUTABLE) $(LIBRARY) ## Compile both the library and the executable
+build: $(EXECUTABLE) $(LIBRARY) ## Compile the static library and the executable
 
 fbuild: fclean ## Re-build everything from zero
 	@$(MAKE) build --no-print-directory
 
-lib: $(LIBRARY) ## Compile the (static) library
+static: $(LIBRARY) ## Compile the static library
 
-.PHONY: build fbuild lib
+shared: $(SHARED) ## Compile the shared library. Appropriate compilation flags like -fPIC needs to have been set
+
+.PHONY: build fbuild static shared
 
 ##@ Run
 
@@ -121,7 +122,7 @@ clean: ## Remove intermediate objects
 	$(RM) -r $(CACHE_FOLDER)
 
 fclean: clean ## Remove all generated files
-	$(RM) $(EXECUTABLE) $(LIBRARY)
+	$(RM) $(EXECUTABLE) $(LIBRARY) $(SHARED)
 	$(RM) -r $(DOC_FOLDER)/latex $(DOC_FOLDER)/html $(DOC_FOLDER)/man
 
 .PHONY: clean fclean
@@ -141,6 +142,9 @@ $(MAIN_OBJ): $(CACHE_FOLDER)/%.o: %.c # declare the dependency of the object con
 
 $(LIBRARY): $(OBJECTS) # Group all the compiled objects into an indexed archive
 	$(AR) rcs $@ $^
+
+$(SHARED): $(OBJECTS) # Create a shared object
+	$(CC) $(CFLAGS) -shared $< $(LDFLAGS) $(LDLIBS) -o $@
 
 $(PDF): $(LATEX)/Makefile # Generate the pdf doc
 	$(MAKE) -C $(@D)

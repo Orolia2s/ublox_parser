@@ -1,15 +1,16 @@
+
 #*#
 *~
 *.a
+*conan*.conf
+*conan*.sh
 *.d
+doc/html/
+doc/latex/
+doc/man/
 *.exe
 *info.json
 *info.txt
 *.lock
 *.o
 *.pc
-
-# Documentation
-doc/html/
-doc/latex/
-doc/man/

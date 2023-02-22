@@ -10,7 +10,7 @@
 ublox_checksum_t ublox_compute_checksum(const ublox_message_t* message, size_t size)
 {
 	ublox_checksum_t result = {0, 0};
-	uint8_t*         byte   = (uint8_t*)message;
+	const uint8_t*   byte   = (const uint8_t*)message;
 
 	while (size --> 0)
 	{
