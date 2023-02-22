@@ -22,12 +22,12 @@ printf "%-40s" "Checking for conan"
 if command -v conan >/dev/null 2>/dev/null
 then printf $OK
 else printf $KO
-	pip install --user conan
+	pip install --user 'conan<2.0'
 fi
 
 printf "%-40s" "Checking for required conan packages"
-if test $(conan search --raw libft/2.6 | wc -c) -gt 1 \
-		-a $(conan search --raw libunit/1.3 | wc -c) -gt 1
+if test $(conan search --raw libft/2.8 | wc -c) -gt 1 \
+		-a $(conan search --raw libunit/1.4 | wc -c) -gt 1
 then printf $OK
 else printf $KO
 	TMP_DIR=$(mktemp -d)

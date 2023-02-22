@@ -1,5 +1,5 @@
 [requires]
-libft/2.7
+libft/2.8
 libunit/1.4
 log.c/cci.20200620
 
