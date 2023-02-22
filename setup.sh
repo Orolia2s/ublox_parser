@@ -26,7 +26,7 @@ else printf $KO
 fi
 
 printf "%-40s" "Checking for required conan packages"
-if test $(conan search --raw libft/2.8 | wc -c) -gt 1 \
+if test $(conan search --raw libft/2.9 | wc -c) -gt 1 \
 		-a $(conan search --raw libunit/1.4 | wc -c) -gt 1
 then printf $OK
 else printf $KO

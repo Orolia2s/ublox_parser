@@ -49,7 +49,7 @@ sync:
 	{
 		log_trace(
 			"Unable to read completely a message of class %s, discarding header",
-			ublox_class_strings[message[0]->group]);
+			cstring_from_ublox_class(message[0]->group));
 		goto fail;
 	}
 	ftq_pop_front_into_array(queue, result, message[0]->length);
@@ -60,8 +60,8 @@ sync:
 		ftq_pop_front(queue, &expected, sizeof(expected));
 		if (*(uint16_t*)&computed != *(uint16_t*)&expected)
 		{
-			log_warn("Discarding message of type %s with invalid checksum",
-			         ublox_class_strings[message[0]->group]);
+			log_warn("Discarding message of class %s and type %#.2hhx with invalid checksum",
+			         cstring_from_ublox_class(message[0]->group), message[0]->type);
 			goto sync;
 		}
 	}
