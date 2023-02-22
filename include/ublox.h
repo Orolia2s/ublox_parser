@@ -32,7 +32,7 @@ typedef struct ublox_header ublox_message_t;
  */
 struct ublox_header
 {
-	uint8_t class;   /**< Message Class */
+	uint8_t  group;  /**< Message Class */
 	uint8_t  type;   /**< Message ID */
 	uint16_t length; /**< Number of bytes in the payload */
 };

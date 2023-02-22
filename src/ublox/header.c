@@ -11,8 +11,8 @@ t_string ublox_header_tostring(const struct ublox_header* message)
 {
 	t_string result = NEW_STRING;
 
-	append(result, "class: %s, ", ublox_class_strings[message->class]);
-	switch (message->class)
+	append(result, "group: %s, ", ublox_class_strings[message->group]);
+	switch (message->group)
 	{
 	case MON:
 		if (!is_valid_ublox_monitoring_message(message->type))
