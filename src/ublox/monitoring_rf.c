@@ -17,9 +17,9 @@ t_string ublox_monitoring_rf_block_tostring(const struct ublox_monitoring_rf_blo
 	t_string result = NEW_STRING;
 
 	append(result, "ID: %" PRIu8 , message->id);
-	append(result, ", jamming_state: %s", ublox_jamming_state_strings[message->jamming_state]);
-	append(result, ", antenna_status: %s", ublox_antenna_status_strings[message->antenna_status]);
-	append(result, ", antenna_power: %s", ublox_antenna_power_strings[message->antenna_power]);
+	append(result, ", jamming_state: %s", cstring_from_ublox_jamming_state(message->jamming_state));
+	append(result, ", antenna_status: %s", cstring_from_ublox_antenna_status(message->antenna_status));
+	append(result, ", antenna_power: %s", cstring_from_ublox_antenna_power(message->antenna_power));
 	FOR(EACH((PRIu32, post_status),
 	         (PRIu16, noise_per_ms),
 	         (PRIu16, agc_count),

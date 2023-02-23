@@ -60,40 +60,23 @@ DECLARE_ENUM_WITH_VALUES(ublox_constellation,
 	(NavIC   /**< Navigation Indian Constellation                 */, 7)
 );
 
-// clang-format on
+DECLARE_ENUM_WITH_STRINGS(ublox_jamming_state,
+	(UBX_JAMMING_UNKNOWN  /**< unknown or feature disabled     */, "unknown" ),
+	(UBX_JAMMING_OK       /**< no significant jamming          */, "OK"      ),
+	(UBX_JAMMING_WARNING  /**< interference visible but fix OK */, "warning" ),
+	(UBX_JAMMING_CRITICAL /**< interference visible and no fix */, "critical")
+);
 
-enum ublox_jamming_state
-{
-	UBX_JAMMING_UNKNOWN, /**< unknown or feature disabled */
-	UBX_JAMMING_OK,      /**< no significant jamming */
-	UBX_JAMMING_WARNING, /**< interference visible but fix OK */
-	UBX_JAMMING_CRITICAL, /**< interference visible and no fix */
-	ublox_jamming_state_count
-};
+DECLARE_ENUM_WITH_STRINGS(ublox_antenna_status,
+	(UBLOX_ANTENNA_INIT ,    "initializing"),
+	(UBLOX_ANTENNA_DONTKNOW, "unknown"     ),
+	(UBLOX_ANTENNA_OK,       "OK"          ),
+	(UBLOX_ANTENNA_SHORT,    "short"       ),
+	(UBLOX_ANTENNA_OPEN,     "open"        )
+);
 
-[[ maybe_unused ]]
-static const char* ublox_jamming_state_strings[] = {"unknown", "OK", "warning", "critical"};
-
-enum ublox_antenna_status
-{
-	UBLOX_ANTENNA_INIT,
-	UBLOX_ANTENNA_DONTKNOW,
-	UBLOX_ANTENNA_OK,
-	UBLOX_ANTENNA_SHORT,
-	UBLOX_ANTENNA_OPEN,
-	ublox_antenna_status_count
-};
-
-[[ maybe_unused ]]
-static const char* ublox_antenna_status_strings[]= {"initializing", "unknown", "OK", "short", "open"};
-
-enum ublox_antenna_power
-{
-	UBLOX_ANTENNA_OFF,
-	UBLOX_ANTENNA_ON,
-	UBLOX_ANTENNA_POWER_UNKNOWN,
-	ublox_antenna_power_count
-};
-
-[[ maybe_unused ]]
-static const char* ublox_antenna_power_strings[]= {"OFF", "ON", "unknown"};
+DECLARE_ENUM_WITH_STRINGS(ublox_antenna_power,
+	(UBLOX_ANTENNA_OFF,           "OFF"    ),
+	(UBLOX_ANTENNA_ON,            "ON"     ),
+	(UBLOX_ANTENNA_POWER_UNKNOWN, "unknown")
+);
