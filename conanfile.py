@@ -12,7 +12,7 @@ class UbloxParserConan(ConanFile):
     settings = 'os', 'compiler', 'build_type', 'arch'
     generators = 'PkgConfigDeps'
     exports_sources = 'src/*', 'include/*', 'Makefile', 'README.md'
-    requires = 'libft/2.9', 'log.c/cci.20200620'
+    requires = 'libft/2.10', 'log.c/cci.20200620'
     options = {
         'shared': [True, False],
         'fPIC': [True, False],
