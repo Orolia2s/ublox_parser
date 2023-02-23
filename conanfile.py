@@ -4,7 +4,6 @@ from conan.tools.gnu import Autotools, AutotoolsToolchain
 
 class UbloxParserConan(ConanFile):
     name = 'ublox_parser'
-    version = '1.0'
     author = 'A. Gagniere (antoine.gagniere@orolia2s.com)'
     url = ''
     description = 'Subscribe to u-blox messages'
@@ -23,6 +22,11 @@ class UbloxParserConan(ConanFile):
         'fPIC': False,
         'colored_logs': True
     }
+
+    def set_version(self):
+        pipe = StringIO()
+        self.run('make version', output=pipe)
+        self.version =  pipe.getvalue()
 
     def configure(self):
         del self.settings.compiler.libcxx
