@@ -1,11 +1,12 @@
-from io import StringIO
 from conans import ConanFile
 from conan.tools.gnu import Autotools, AutotoolsToolchain
+from conan.tools.scm import Git
 
 class UbloxParserConan(ConanFile):
     name = 'ublox_parser'
     author = 'A. Gagniere (antoine.gagniere@orolia2s.com)'
-    url = ''
+    url = 'https://github.com/Orolia2s/ublox_parser'
+    license='proprietary'
     description = 'Subscribe to u-blox messages'
     topics = ('ublox', 'nmea', 'serial_port')
     settings = 'os', 'compiler', 'build_type', 'arch'
@@ -24,9 +25,8 @@ class UbloxParserConan(ConanFile):
     }
 
     def set_version(self):
-        pipe = StringIO()
-        self.run('make version', output=pipe)
-        self.version =  pipe.getvalue()
+        git = Git(self, folder=self.recipe_folder)
+        self.version = git.run('tag --sort "-version:refname" --merged').split('\n', 1)[0]
 
     def configure(self):
         del self.settings.compiler.libcxx
