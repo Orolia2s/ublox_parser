@@ -37,11 +37,11 @@ LDLIBS   += -l $(NAME)
 LDFLAGS  += $(shell pkg-config --libs-only-L *.pc)
 LDLIBS   += $(shell pkg-config --libs-only-l *.pc)
 
-SOURCES  != find $(SOURCE_FOLDER) -name '*.c'
+SOURCES  := $(shell find $(SOURCE_FOLDER) -name '*.c')
 OBJECTS  := $(SOURCES:$(SOURCE_FOLDER)/%.c=$(CACHE_FOLDER)/%.o)
 MAIN_OBJ := $(CACHE_FOLDER)/parse_ublox.o
 
-SOURCE_SUBFOLDERS != find $(SOURCE_FOLDER) -type d
+SOURCE_SUBFOLDERS := $(shell find $(SOURCE_FOLDER) -type d)
 
 PDF   := $(DOC_FOLDER)/latex/refman.pdf
 HTML  := $(DOC_FOLDER)/html/index.html

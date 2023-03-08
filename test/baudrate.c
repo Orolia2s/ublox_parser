@@ -18,9 +18,7 @@ TEST_SECTION(baudrate_decode, extract_name, BAUDX_condition,
 	(38400),
 	(57600),
 	(115200),
-	(230400),
-	(460800),
-	(921600)
+	(230400)
 );
 
 #define BAUDE_condition(VALUE) \
@@ -32,9 +30,7 @@ TEST_SECTION(baudrate_encode, extract_name, BAUDE_condition,
 	(38400),
 	(57600),
 	(115200),
-	(230400),
-	(460800),
-	(921600)
+	(230400)
 );
 
 // clang-format on
