@@ -1,0 +1,123 @@
+kind: icd
+metadata:
+  constellation: BeiDou
+  message: D1
+frame_count: 24
+subframe_count: 5
+reuse:
+  word1: &word1
+    name: word1
+    fields:
+      - name: preambule
+        bits: 11
+      - name: rev
+        bits: 4
+      - name: subframe_id
+        bits: 3
+      - name: second_of_week
+        bits: 8
+        half: msb
+        latex: SOW
+      - name: parity
+        bits: 4
+  parity: &parity
+    name: parity
+    bits: 8
+subframes:
+  - id: 1
+    bit_count: 300
+    words:
+      - *word1
+      - name: word2
+        fields:
+          - latex: SOW
+            name: second_of_week
+            bits: 12
+            half: lsb
+          - latex: SatH1
+            bits: 1
+          - latex: AODC
+            bits: 5
+          - latex: URAI
+            bits: 4
+          - *parity
+      - name: word3
+        fields:
+          - latex: WN
+            bits: 13
+          - latex: 't_{oc}'
+            bits: 9
+            half: msb
+          - *parity
+      - name: word4
+        fields:
+          - latex: 't_{oc}'
+            bits: 8
+            half: lsb
+          - latex: 'T_{GD1}'
+            bits: 10
+          - latex: 'T_{GD2}'
+            bits: 4
+            half: msb
+          - *parity
+      - name: word5
+        fields:
+          - latex: 'T_{GD2}'
+            bits: 6
+            half: lsb
+          - latex: '\alpha_0'
+            bits: 8
+          - latex: '\alpha_1'
+            bits: 8
+          - *parity
+      - name: word6
+        fields:
+          - latex: '\alpha_2'
+            bits: 8
+          - latex: '\alpha_3'
+            bits: 8
+          - latex: '\beta_0'
+            bits: 6
+            half: msb
+          - *parity
+      - name: word7
+        fields:
+          - latex: '\beta_0'
+            bits: 2
+            half: lsb
+          - latex: '\beta_1'
+            bits: 8
+          - latex: '\beta_2'
+            bits: 8
+          - latex: '\beta_3'
+            bits: 4
+            half: msb
+          - *parity
+      - name: word8
+        fields:
+          - latex: '\beta_3'
+            bits: 4
+            half: lsb
+          - latex: 'a_2'
+            bits: 11
+          - latex: 'a_0'
+            bits: 7
+            half: msb
+          - *parity
+      - name: word9
+        fields:
+          - latex: 'a_0'
+            bits: 17
+            half: lsb
+          - latex: 'a_1'
+            bits: 5
+            half: msb
+          - *parity
+      - name: word10
+        fields:
+          - latex: 'a_1'
+            bits: 17
+            half: lsb
+          - latex: AODE
+            bits: 5
+          - *parity
