@@ -43,7 +43,9 @@ DECLARE_ENUM_WITH_VALUES(ublox_monitoring_message,
  * Possible messages in the RXM class
  */
 DECLARE_ENUM_WITH_VALUES(ublox_receiver_message,
-	(SFRBX /**< Broadcast navigation data subframe */, 0x13)
+	(SFRBX /**< Broadcast navigation data subframe */, 0x13),
+	(RAWX  /**< Multi-GNSS raw measurements        */, 0x15),
+	(TM    /**< Time mark data for UBX-RXM-RAWX    */, 0x74)
 );
 
 /**

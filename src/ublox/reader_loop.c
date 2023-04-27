@@ -14,7 +14,6 @@ bool ublox_reader_loop(ublox_reader_t* reader)
 		while (ARRAY_HASNEXT(&reader->callbacks, iterator))
 		{
 			(*(ublox_callback_t*)iterator)(message);
-			// pthread_create(, , iterator, message);
 		}
 		free(message);
 	}
