@@ -147,6 +147,7 @@ struct ublox_monitoring_hardware
 t_string ublox_navigation_data_tostring(const struct ublox_navigation_data* message);
 t_string ublox_monitoring_hardware_tostring(const struct ublox_monitoring_hardware* message);
 t_string ublox_monitoring_rf_tostring(const struct ublox_monitoring_rf* message);
+t_string ublox_position_time_tostring(const struct ublox_position_time* message);
 
 /**
 @var ublox_monitoring_rf_block::id

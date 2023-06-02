@@ -48,6 +48,9 @@ DECLARE_ENUM_WITH_VALUES(ublox_receiver_message,
 	(TM    /**< Time mark data for UBX-RXM-RAWX    */, 0x74)
 );
 
+/**
+ * Possible messages in the NAV class
+ */
 DECLARE_ENUM_WITH_VALUES(ublox_navigation_message,
 	(PVT   /**< Navigation position velocity time solution */, 0x07),
 	(CLOCK /**< Clock solution                             */, 0x22),

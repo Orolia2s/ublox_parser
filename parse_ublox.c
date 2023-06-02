@@ -34,6 +34,12 @@ void ublox_printer(ublox_message_t* message)
 			str = ublox_monitoring_rf_tostring((struct ublox_monitoring_rf*)message);
 		printf("{%s}\n---\n", cstring(&str));
 	}
+	else if (message->ublox_class == NAV && message->type == PVT)
+	{
+		RAII(t_string)
+			str = ublox_position_time_tostring((struct ublox_position_time*)message);
+		printf("{%s}\n---\n", cstring(&str));
+	}
 	else
 	{
 		RAII(t_string) str = ublox_header_tostring(message);
