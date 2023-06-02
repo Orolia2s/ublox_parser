@@ -48,6 +48,12 @@ DECLARE_ENUM_WITH_VALUES(ublox_receiver_message,
 	(TM    /**< Time mark data for UBX-RXM-RAWX    */, 0x74)
 );
 
+DECLARE_ENUM_WITH_VALUES(ublox_navigation_message,
+	(PVT   /**< Navigation position velocity time solution */, 0x07),
+	(CLOCK /**< Clock solution                             */, 0x22),
+	(EOE   /**< End of epoch                               */, 0x61)
+);
+
 /**
  * Possible values of @ref ublox_navigation_data::constellation
  */

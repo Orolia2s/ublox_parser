@@ -12,6 +12,54 @@
 #include <stdint.h>    // uint*_t
 
 /**
+ * Navigation position, velocity and time solution.
+ *
+ * This message combines position, velocity and time solution, including accuracy figures.
+ * Note that during a leap second there may be more or less than 60 seconds in a minute.
+ */
+struct ublox_position_time
+{
+	struct ublox_header header; /**< Inherit from ublox message base struct */
+
+	uint32_t            time_of_week;           /**< GPS time of week of the navigation epoch, in milliseconds */
+	uint16_t            year;                   /**< UTC year */
+	uint8_t             month;                  /**< UTC month, from 1 to 12 */
+	uint8_t             day;                    /**< UTC day of the month, from 1 to 31 */
+	uint8_t             hour;                   /**< UTC hour of the day, from 0 to 23 */
+	uint8_t             minute;                 /**< UTC minute of the hour, from 0 to 59 */
+	uint8_t             second;                 /**< UTC second of the minute, from 0 to 60 */
+	uint8_t             is_date_valid     :1;   /**< Date validity */
+	uint8_t             is_time_valid     :1;   /**< Time validity */
+	uint8_t             is_time_resolved  :1;   /**< UTC time of day has been fully resolved */
+	uint8_t             is_magnetic_valid :1;   /**< Magnetic declination validity */
+	uint32_t            time_accuracy;          /**< UTC time accuracy estimate, in nanoseconds */
+	int32_t             nanosecond;             /**< Fraction of a second */
+	uint8_t             gnss_fix;               /**< GNSS fix type */
+	uint8_t             flags1;                 /* Fix status flags */
+	uint8_t             flags2;                 /* Additional flags */
+	uint8_t             satellite_count;        /**< Number of satellites used in Nav Solution */
+	int32_t             longitude;              /**< in degrees */
+	int32_t             latitude;               /**< in degrees */
+	int32_t             height;                 /**< Height above ellipsoid, in millimeters */
+	int32_t             height_above_sea_level; /**< Height above mean sea level, in millimeters */
+	uint32_t            horizontal_accuracy;    /**< Horizontal accuracy estimate, in millimeters */
+	uint32_t            vertical_accuracy;      /**< Vertical accuracy estimate, in millimeters */
+	int32_t             velocity_north;         /**< NED north velocity, in millimeters per second */
+	int32_t             velocity_east;          /**< NED east velocity, in millimeters per second */
+	int32_t             velocity_down;          /**< NED down velocity, in millimeters per second */
+	int32_t             ground_speed;           /**< 2D speed, in millimeters per second */
+	int32_t             heading;                /**< 2D heading of motion, in degrees */
+	uint32_t            speed_accuracy;         /**< Speed accuracy estimate , in millimeters / second*/
+	uint32_t            heading_accuracy;
+	uint16_t            dop;
+	uint16_t            flags3; /* Additional flags */
+	uint32_t            _reserved;
+	int32_t             vehicle_heading;
+	int16_t             magnetic_declination;
+	uint16_t            magnetic_accuracy;
+};
+
+/**
  * Broadcast Navigation Data Subframe.
  *
  * This message reports a complete subframe of broadcast navigation data
