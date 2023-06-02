@@ -34,6 +34,7 @@ DECLARE_ENUM_WITH_VALUES(ublox_class,
 DECLARE_ENUM_WITH_VALUES(ublox_monitoring_message,
 	(HW    /**< Hardware status                */, 0x09),
 	(HW2   /**< Extended Hardware status       */, 0x0b),
+	(SPAN  /**< Signal characteristics         */, 0x31),
 	(HW3   /**< I/O pin status                 */, 0x37),
 	(RF    /**< Radio Frequency information    */, 0x38),
 	(COMMS /**< Communication port information */, 0x36)
@@ -52,9 +53,16 @@ DECLARE_ENUM_WITH_VALUES(ublox_receiver_message,
  * Possible messages in the NAV class
  */
 DECLARE_ENUM_WITH_VALUES(ublox_navigation_message,
-	(PVT   /**< Navigation position velocity time solution */, 0x07),
-	(CLOCK /**< Clock solution                             */, 0x22),
-	(EOE   /**< End of epoch                               */, 0x61)
+	(STATUS  /**< Receiver navigation status                 */, 0x03),
+	(DOP     /**< Dilution of precision                      */, 0x04),
+	(TIMEGPS /**<  */, 0x20),
+	(TIMEGLO /**<  */, 0x23),
+	(TIMEBDS /**<  */, 0x24),
+	(TIMEGAL /**<  */, 0x25),
+	(TIMELS  /**< Leap second event information              */, 0x26),
+	(PVT     /**< Navigation position velocity time solution */, 0x07),
+	(CLOCK   /**< Clock solution                             */, 0x22),
+	(EOE     /**< End of epoch                               */, 0x61)
 );
 
 /**
