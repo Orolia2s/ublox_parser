@@ -1,7 +1,7 @@
 OK="[\e[1;32mOK\e[0m]\n"
 KO="[\e[1;33mInstalling\e[0m]\n"
 
-function check_program_installed()
+function check_program_installed
 {
 	package=$1
 	if test -n $2
