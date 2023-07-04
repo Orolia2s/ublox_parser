@@ -127,6 +127,20 @@ fclean: clean ## Remove all generated files
 
 .PHONY: clean fclean
 
+##@ Macro expansion
+
+src/%_macroless.c: src/%.c
+	gcc -E -P $(CPPFLAGS) -o $@ $<
+
+expand_macro:$(patsubst %.c,%_macroless.c,$(wildcard src/**/*.c))
+#other way --> @$(foreach file, $(wildcard $(SOURCES)), gcc -E -P $(CPPFLAGS) -o $(patsubst %.c,%_macroless.c,$(file)) $(file);)
+
+remove_macro_expansion:
+	@$(foreach file, $(wildcard $(wildcard src/**/*_macroless.c)), rm $(file);)
+	@$(foreach file, $(wildcard $(wildcard src/**/*.d)), rm $(file);)
+
+.PHONY: clean fclean replace_macro
+
 # Non-phony rules
 
 include $(wildcard $(OBJECTS:.o=.d)) # To know on which header each .o depends
