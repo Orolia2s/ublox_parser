@@ -1,6 +1,8 @@
-from conans import ConanFile
-from conan.tools.gnu import Autotools, AutotoolsToolchain
+import os
+from conan import ConanFile
+from conan.tools.gnu import Autotools, AutotoolsToolchain, AutotoolsDeps
 from conan.tools.scm import Git
+from conan.tools.files import save, load, copy
 
 class UbloxParserConan(ConanFile):
     name = 'ublox_parser'
@@ -24,17 +26,30 @@ class UbloxParserConan(ConanFile):
         'colored_logs': True
     }
 
-    def set_version(self):
+    def _get_latest_tag(self):
         git = Git(self, folder=self.recipe_folder)
-        self.version = git.run('tag --sort "-version:refname" --merged').split('\n', 1)[0]
+        return git.run('tag --sort "-version:refname" --merged').split('\n', 1)[0]
+
+    def export(self):
+        save(self, os.path.join(self.export_folder, 'version.txt'), self._get_latest_tag())
+
+    def set_version(self):
+        try:
+            self.version = load(self, 'version.txt')
+        except:
+            self.version = self._get_latest_tag()
 
     def configure(self):
-        del self.settings.compiler.libcxx
-        del self.settings.compiler.cppstd
+        self.settings.rm_safe('compiler.libcxx')
+        self.settings.rm_safe('compiler.cppstd')
         if self.options.shared:
-            self.options.fPIC = True
+            self.options.rm_safe("fPIC")
 
     def generate(self):
+        autotools = AutotoolsDeps(self)
+        autotools.environment.define('VERSION', self.version)
+        autotools.generate()
+
         toolchain = AutotoolsToolchain(self)
         if self.options.colored_logs:
             toolchain.extra_defines.append('LOG_USE_COLOR')
@@ -46,10 +61,14 @@ class UbloxParserConan(ConanFile):
         autotools.make('clean')
 
     def package(self):
-        self.copy('*.h', dst='include', src='include')
-        self.copy('*.a', dst='lib', keep_path=False)
-        self.copy('*.so', dst='lib', keep_path=False)
-        self.copy('README.md')
+        copy(self, '*.h',
+             os.path.join(self.source_folder, 'include'),
+             os.path.join(self.package_folder, 'include'))
+        for file in ('*.a', '*.so'):
+            copy(self, file, self.build_folder,
+                 os.path.join(self.package_folder, 'lib'))
+        for file in ('version.txt', 'README.md'):
+            copy(self, file, self.source_folder, self.package_folder)
 
     def package_info(self):
         self.cpp_info.libs = ['ublox_parser']
