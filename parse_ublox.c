@@ -1,8 +1,8 @@
-#include "serial.h"
-#include "ublox.h"
-#include "ublox_enums.h"
-#include "ublox_messages.h"
-#include "ublox_reader.h"
+#include "ublox_parser/serial.h"
+#include "ublox_parser/ublox.h"
+#include "ublox_parser/ublox_enums.h"
+#include "ublox_parser/ublox_messages.h"
+#include "ublox_parser/ublox_reader.h"
 
 #include <argp.h>
 #include <fcntl.h>           // open
