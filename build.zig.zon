@@ -1,0 +1,24 @@
+.{
+    .name = .ublox_parser,
+    .version = "0.2.0",
+    .dependencies = .{
+        .libft = .{
+            .url = "git+https://github.com/agagniere/Libft?ref=master#f3316af39f2fc44fdc73524d6b95f392e083a4f5",
+            .hash = "libft-2.11.0-w6XarmmFBADN7ySIVByikgH_RVcnas-H2Qgz4j-ud6Y8",
+        },
+        .logc = .{
+            .url = "git+https://github.com/rxi/log.c#f9ea34994bd58ed342d2245cd4110bb5c6790153",
+            .hash = "N-V-__8AAJ8jAAAVkKD-RFvNLcnmi3SJZWigTFePQTb0sG-u",
+        },
+    },
+    .fingerprint = 0xb3ddc4520c4a163f,
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "include",
+        "test",
+        "README.md",
+        "LICENSE",
+    },
+}
