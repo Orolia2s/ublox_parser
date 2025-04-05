@@ -46,6 +46,8 @@ pub fn build(b: *std.Build) void {
 
         exe.addCSourceFile(.{ .file = b.path("parse_ublox.c") });
         exe.linkLibrary(lib);
+        exe.linkLibrary(libo2s);
+        exe.addIncludePath(blackmagic.path("include"));
         if (b.args) |args| {
             run_cmd.addArgs(args);
         }
