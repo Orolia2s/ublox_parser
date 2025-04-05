@@ -1,50 +1,42 @@
-#include "ublox_parser/serial.h"
 #include "ublox_parser/ublox.h"
 #include "ublox_parser/ublox_enums.h"
 #include "ublox_parser/ublox_messages.h"
 #include "ublox_parser/ublox_reader.h"
 
+#include <blackmagic/token.h> // STRINGIZE
+#include <o2s/log.h>          // log_*
+#include <o2s/serial.h>       // serial_open_readwrite
+
 #include <argp.h>
-#include <fcntl.h>           // open
-#include <ft_prepro/tools.h> // PP_STR
-#include <log.h>
+#include <fcntl.h> // open
 #include <termios.h>
 
 #include <stdbool.h>
 #include <stdio.h>  // printf
 #include <stdlib.h> // free
 
+/** Create a u16 from two u8 */
+#define PAIR(HIGH, LOW) (((HIGH) << 8) | (LOW))
+
 void ublox_printer(ublox_message_t* message)
 {
-	if (message->ublox_class == RXM && message->type == SFRBX)
+	string_t string = string_new();
+
+	switch (*(uint16_t*)message)
 	{
-		RAII(t_string)
-			str = ublox_navigation_data_tostring((struct ublox_navigation_data*)message);
-		printf("{%s}\n---\n", cstring(&str));
+	case PAIR(RXM, SFRBX):
+		string = ublox_navigation_data_tostring((struct ublox_navigation_data*)message); break;
+	case PAIR(MON, HW):
+		string = ublox_monitoring_hardware_tostring((struct ublox_monitoring_hardware*)message); break;
+	case PAIR(MON, RF):
+		string = ublox_monitoring_rf_tostring((struct ublox_monitoring_rf*)message); break;
+	case PAIR(NAV, PVT):
+		string = ublox_position_time_tostring((struct ublox_position_time*)message); break;
+	default:
+		string = ublox_header_tostring(message);
 	}
-	else if (message->ublox_class == MON && message->type == HW)
-	{
-		RAII(t_string)
-			str = ublox_monitoring_hardware_tostring((struct ublox_monitoring_hardware*)message);
-		printf("{%s}\n---\n", cstring(&str));
-	}
-	else if (message->ublox_class == MON && message->type == RF)
-	{
-		RAII(t_string)
-			str = ublox_monitoring_rf_tostring((struct ublox_monitoring_rf*)message);
-		printf("{%s}\n---\n", cstring(&str));
-	}
-	else if (message->ublox_class == NAV && message->type == PVT)
-	{
-		RAII(t_string)
-			str = ublox_position_time_tostring((struct ublox_position_time*)message);
-		printf("{%s}\n---\n", cstring(&str));
-	}
-	else
-	{
-		RAII(t_string) str = ublox_header_tostring(message);
-		printf("{%s}\n---\n", cstring(&str));
-	}
+	printf("{%s}\n---\n", string_to_cstring(&string));
+	string_clear(&string);
 }
 
 /**

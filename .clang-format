@@ -115,6 +115,8 @@ IncludeCategories:
     Priority:        8
   - Regex:           '^<(sys|arpa|netinet)/.*>$'
     Priority:        7
+  - Regex:           '^<(termios|fcntl|argp)\.h>$'
+    Priority:        6
   - Regex:           '^<'
     Priority:        2
   - Regex:           '^"'
