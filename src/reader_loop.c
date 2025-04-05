@@ -5,15 +5,13 @@
 bool ublox_reader_loop(ublox_reader_t* reader)
 {
 	ublox_message_t* message;
+	ublox_callback_t callback;
 
 	while ((message = ublox_next_message(reader->input)))
 	{
-		void *iterator;
-
-		iterator = ARRAY_ITERATOR(&reader->callbacks);
-		while (ARRAY_HASNEXT(&reader->callbacks, iterator))
+		array_foreach(ublox_callback_t, &reader->callbacks, &callback)
 		{
-			(*(ublox_callback_t*)iterator)(message);
+			callback(message);
 		}
 		free(message);
 	}

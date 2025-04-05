@@ -10,23 +10,23 @@ string_t ublox_header_tostring(const struct ublox_header* message)
 {
 	string_t result = string_new();
 
-	append(result, "group: %s, ", cstring_from_ublox_class(message->ublox_class));
+	append(result, "group: %s, ", ublox_class_to_cstring(message->ublox_class));
 	switch (message->ublox_class)
 	{
 	case MON:
-		if (!is_valid_ublox_monitoring_message(message->type))
+		if (!ublox_monitoring_message_is_valid(message->type))
 			goto unknown;
-		append(result, "type: %s, ", cstring_from_ublox_monitoring_message(message->type));
+		append(result, "type: %s, ", ublox_monitoring_message_to_cstring(message->type));
 		break;
 	case RXM:
-		if (!is_valid_ublox_receiver_message(message->type))
+		if (!ublox_receiver_message_is_valid(message->type))
 			goto unknown;
-		append(result, "type: %s, ", cstring_from_ublox_receiver_message(message->type));
+		append(result, "type: %s, ", ublox_receiver_message_to_cstring(message->type));
 		break;
 	case NAV:
-		if (!is_valid_ublox_navigation_message(message->type))
+		if (!ublox_navigation_message_is_valid(message->type))
 			goto unknown;
-		append(result, "type: %s, ", cstring_from_ublox_navigation_message(message->type));
+		append(result, "type: %s, ", ublox_navigation_message_to_cstring(message->type));
 		break;
 	unknown:
 	default: append(result, "type: %#.2" PRIx8 ", ", message->type);
