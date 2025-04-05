@@ -1,77 +1,83 @@
 #include "ublox.h"
 #include "ublox_enums.h"
 
-#include <o2s/array.h>
-#include <o2s/log.h>
+#include <o2s/array.h> // array_t
+#include <o2s/log.h>   // log_*
 
-#include <stddef.h> // size_t
+#include <inttypes.h> // PRIu16
+#include <iso646.h>   // not
+#include <stddef.h>   // size_t
 
 enum parser_error
 {
 	PARSER_SUCCESS, /**< Not an error: an ublox message was successfully parsed */
+	/* Warnings: */
 	PARSER_GARBAGE, /**< The first 2 characters read were not as expected, just try again */
-	PARSER_ERROR_READ = 8,/**< Could not read enough characters */
+	/* Errors: */
+	PARSER_ERROR_INVALID_CLASS = 4, /**< A possible ublox message had an unknown class */
+	PARSER_ERROR_WRONG_CHECKSUM,    /**< The integrity check failed, the message may be corrupted */
+	/* Fatal errors: */
+	PARSER_ERROR_READ = 8,    /**< Could not read enough characters */
 	PARSER_ERROR_UNREACHABLE, /**< It should not be possible to emit this error */
 };
 
-static void queue_pop_into_array(queue_t* queue, array_t* array, size_t count)
+static bool queue_pop_into_array(queue_t* queue, array_t* array, size_t count)
 {
-	array_reserve(array, count);
-	queue_pop_n(queue, array_end(array), count);
+	if (queue->type_size != array->type_size
+	    || queue_count(queue) < count
+	    || not array_reserve(array, count)
+	    || not queue_pop_n(queue, array_end(array), count))
+		return false;
 	array->count += count;
+	return true;
+}
+
+enum parser_error ublox_parse_single_message(istream_t* input, array_t* output)
+{
+	char              current;
+	ublox_message_t** message = (ublox_message_t**)&output->start;
+	ublox_checksum_t  computed;
+
+	array_clear(output);
+	if (not istream_accumulate(input, sizeof(ublox_sync_chars) + ublox_smallest_message_size))
+		return PARSER_ERROR_READ;
+	if (queue_pop(&input->buffer, &current))
+		return PARSER_ERROR_UNREACHABLE;
+	if (current != ublox_sync_chars[0])
+		return PARSER_GARBAGE;
+	if (queue_count(&input->buffer) == 0)
+		return PARSER_ERROR_UNREACHABLE;
+	if (*(char*)queue_first(&input->buffer) != ublox_sync_chars[1])
+		return PARSER_GARBAGE;
+	if (not queue_pop(&input->buffer, NULL))
+		return PARSER_ERROR_UNREACHABLE;
+	if (!ublox_class_is_valid(*(uint8_t*)queue_first(&input->buffer)))
+	{
+		log_warning("Discarding message of unknown class %#.2hhx", *(uint8_t*)queue_first(&input->buffer));
+		return PARSER_ERROR_INVALID_CLASS;
+	}
+	if (not queue_pop_into_array(&input->buffer, output, sizeof(struct ublox_header))
+	    || array_count(output) != sizeof(struct ublox_header))
+		return PARSER_ERROR_UNREACHABLE;
+	if (not istream_accumulate(input, (*message)->length + sizeof(struct ublox_footer)))
+	{
+		log_warning("Unable to read completely a message of class %s and length %" PRIu16 ", discarding header",
+		            ublox_class_to_cstring((*message)->ublox_class),
+		            (*message)->length);
+		return PARSER_ERROR_READ;
+	}
+	if (not queue_pop_into_array(&input->buffer, output, (*message)->length)
+	    || queue_count(&input->buffer) < sizeof(struct ublox_footer))
+		return PARSER_ERROR_UNREACHABLE;
+	computed = ublox_compute_checksum(array_first(output), array_count(output));
+	if (*(uint8_t*)queue_first(&input->buffer) != computed.a
+	    || *(uint8_t*)queue_get(&input->buffer, 1) != computed.b)
+		return PARSER_ERROR_WRONG_CHECKSUM;
+	if (not queue_pop_n(&input->buffer, NULL, sizeof(struct ublox_footer)))
+		return PARSER_ERROR_UNREACHABLE;
+	return PARSER_SUCCESS;
 }
 
 ublox_message_t* ublox_next_message(istream_t* input)
 {
-	queue_t* queue    = &input->buffer;
-	array_t  result[] = {ArrayNew(uint8_t)};
-
-sync:
-	while (istream_accumulate(input, sizeof(ublox_sync_chars) + ublox_smallest_message_size)
-	       && *(uint8_t*)queue_first(queue) != ublox_sync_chars[0])
-	{
-		queue_pop(queue, NULL);
-	}
-	if (ftq_is_empty(queue) || *(uint8_t*)ftq_first(queue) != ublox_sync_chars[0])
-		goto fail;
-	FTQ_POP_FRONT_ONE(queue, NULL);
-	if (*(uint8_t*)ftq_first(queue) != ublox_sync_chars[1])
-		goto sync;
-	FTQ_POP_FRONT_ONE(queue, NULL);
-	if (!is_valid_ublox_class(*(uint8_t*)ftq_first(queue)))
-	{
-		log_trace("Discaring header of unknown class %#.2hhx", *(uint8_t*)ftq_first(queue));
-		goto sync;
-	}
-	ftq_pop_front_into_array(queue, result, sizeof(struct ublox_header));
-
-	ublox_message_t** message = (ublox_message_t**)&result->data;
-	if (!file_accumulate(file, message[0]->length + sizeof(struct ublox_footer)))
-	{
-		log_trace("Unable to read completely a message of class %s, discarding header",
-		          cstring_from_ublox_class(message[0]->ublox_class));
-		ft_print_memory(result->data, result->size);
-		result->size = 0;
-		goto sync;
-	}
-	ftq_pop_front_into_array(queue, result, message[0]->length);
-	{
-		ublox_checksum_t computed = ublox_compute_checksum(result->data, result->size);
-		ublox_checksum_t expected;
-
-		ftq_pop_front(queue, &expected, sizeof(expected));
-		if (*(uint16_t*)&computed != *(uint16_t*)&expected)
-		{
-			RAII(t_string) str = ublox_header_tostring(message[0]);
-			log_warn("Discarding message with invalid checksum: {%s}", cstring(&str));
-			ft_print_memory(result->data, result->size);
-			result->size = 0;
-			goto sync;
-		}
-	}
-	fta_trim(result);
-	return result->data;
-fail:
-	fta_clear(result);
-	return NULL;
 }

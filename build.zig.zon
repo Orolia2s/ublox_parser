@@ -12,8 +12,8 @@
             .hash = "libft-2.11.0-w6XarmmFBADN7ySIVByikgH_RVcnas-H2Qgz4j-ud6Y8",
         },
         .blackmagic = .{
-            .url = "git+https://github.com/agagniere/blackmagic?ref=master#8931e26b51fb5e9df3ed884103e445e3d0c25e15",
-            .hash = "blackmagic-0.3.1-62-rPKR8AACLNVVLbgOGJvjtPqxd8Uf0IgBahY0k1Yrk",
+            .url = "git+https://github.com/agagniere/blackmagic?ref=master#c04a70e1b3b241e586d0843143abb31fa961bf73",
+            .hash = "blackmagic-0.3.2-62-rPOiIAAAtn7i9hsubYgehquX28IvYWyNUggzQDdV7",
         },
     },
     .paths = .{

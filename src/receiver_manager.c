@@ -11,9 +11,9 @@ string_t ublox_navigation_data_tostring(const struct ublox_navigation_data* mess
 {
 	string_t result = ublox_header_tostring(&message->header);
 
-	if (is_valid_ublox_constellation(message->constellation))
+	if (ublox_constellation_is_valid(message->constellation))
 		append(result, ", constellation: %s",
-		       cstring_from_ublox_constellation(message->constellation));
+		       ublox_constellation_to_cstring(message->constellation));
 	else
 		append(result, ", constellation: %" PRIu8, message->constellation);
 	append(result, ", satellite: %" PRIu8, message->satellite);

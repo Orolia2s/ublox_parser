@@ -12,9 +12,9 @@ string_t ublox_monitoring_rf_block_tostring(const struct ublox_monitoring_rf_blo
 	string_t result = string_new();
 
 	append(result, "ID: %" PRIu8 , message->id);
-	append(result, ", jamming_state: %s", cstring_from_ublox_jamming_state(message->jamming_state));
-	append(result, ", antenna_status: %s", cstring_from_ublox_antenna_status(message->antenna_status));
-	append(result, ", antenna_power: %s", cstring_from_ublox_antenna_power(message->antenna_power));
+	append(result, ", jamming_state: %s", ublox_jamming_state_to_cstring(message->jamming_state));
+	append(result, ", antenna_status: %s", ublox_antenna_status_to_cstring(message->antenna_status));
+	append(result, ", antenna_power: %s", ublox_antenna_power_to_cstring(message->antenna_power));
 	FOR(EACH((PRIu32, post_status),
 	         (PRIu16, noise_per_ms),
 	         (PRIu16, agc_count),
@@ -38,8 +38,10 @@ string_t ublox_monitoring_rf_tostring(const struct ublox_monitoring_rf* message)
 	string_append_literal(&result, ", blocks: [");
 	while (block < blocks_end)
 	{
-		RAII(t_string) str = ublox_monitoring_rf_block_tostring(block);
-		append(result, "{%s},", cstring(&str));
+		String str = ublox_monitoring_rf_block_tostring(block);
+		string_append_char(&result, '{');
+		string_append(&result, &str);
+		string_append_char(&result, '}');
 		block++;
 	}
 	string_append_char(&result, ']');
