@@ -1,5 +1,6 @@
-#include <libunit.h>
 #include "ublox.h"
+
+#include <libunit.h> // TEST_SECTION
 
 #define CHECKSUM_name(MESSAGE, EXPECTED) \
 	MERGE(length, ARG_COUNT MESSAGE, checksum, EXPECTED)

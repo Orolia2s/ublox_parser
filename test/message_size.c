@@ -1,7 +1,7 @@
 #include "ublox.h"
 #include "ublox_messages.h"
 
-#include <libunit.h>
+#include <libunit.h> // TEST_SECTION
 
 // clang-format off
 

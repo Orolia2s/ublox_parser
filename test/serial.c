@@ -1,8 +1,6 @@
-#include "serial.h"
+#include <o2s/serial.h>
 
-#include <ft_prepro/color.h>
-#include <ft_printf.h>
-#include <libunit.h>
+#include <libunit.h> // TEST_SECTION TEST_GROUP
 #include <termios.h>
 
 #include <stdbool.h>

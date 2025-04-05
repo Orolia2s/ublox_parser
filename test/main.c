@@ -1,6 +1,8 @@
-#include <ft_prepro/color.h>
-#include <ft_prepro/tools.h>
-#include <ft_printf.h>
+#include <blackmagic/color.h> // COLOR
+#include <blackmagic/for.h>   // FOR EACH
+#include <blackmagic/join.h>  // JOIN
+
+#include <stdio.h> // printf
 
 /*
  * Certain tests are meaningless if another test fails,
@@ -9,26 +11,25 @@
  * there might be a dependency.
  */
 #define TEST_LIST \
-	serial_options, baudrate, port_config, \
-	messages_size, checksum
+	serial_options, messages_size, checksum
 
-#define DECLARE(IGNORED, NAME) \
-    int MERGE(test, NAME)(void);
+#define DECLARE(NAME) \
+    int JOIN(test, NAME)(void);
 
 #define CALL(SUCCESS, TOTAL, NAME) \
-    SUCCESS += ! MERGE(test, NAME)(); \
+    SUCCESS += ! JOIN(test, NAME)(); \
     TOTAL++;
 
-FOR(EACH(TEST_LIST), DECLARE, IGNORED)
+FOR(EACH(TEST_LIST), DECLARE)
 
 int main()
 {
-    unsigned success = 0;
-    unsigned total = 0;
+	unsigned success = 0;
+	unsigned total   = 0;
 
-    FOR(EACH(TEST_LIST), CALL, success, total)
-    ft_printf("%sResult : %u / %u functions%s\n",
-              success == total ? COLOR(GREEN) : COLOR(RED),
-              success, total, COLOR(NORMAL));
-    return (success != total);
+	FOR(EACH(TEST_LIST), CALL, success, total)
+	printf("%sResult : %u / %u functions%s\n",
+	       success == total ? COLOR(GREEN) : COLOR(RED),
+	       success, total, COLOR(NORMAL));
+	return (success != total);
 }
