@@ -61,11 +61,15 @@ pub fn build(b: *std.Build) void {
         const run_unit_tests = b.addRunArtifact(unit_tests);
         const libft = b.dependency("libft", .{ .target = target, .optimize = optimize });
 
-        unit_tests.addCSourceFiles(.{ .root = b.path("test"), .files = &.{ "baudrate.c", "checksum.c", "main.c", "message_size.c", "port_config.c", "serial.c" } });
+        unit_tests.addCSourceFiles(.{ .root = b.path("test"), .files = &.{ "checksum.c", "main.c", "message_size.c", "serial.c" } });
         unit_tests.linkLibrary(lib);
+        unit_tests.linkLibrary(libo2s);
+        unit_tests.linkLibrary(libft.artifact("ft"));
         unit_tests.linkLibrary(libft.artifact("unit"));
         unit_tests.addIncludePath(b.path("include"));
+        unit_tests.addIncludePath(blackmagic.path("include"));
         unit_tests.addIncludePath(libft.path("test/framework"));
+        unit_tests.addIncludePath(libft.path("include")); // ugly fix
         test_step.dependOn(&run_unit_tests.step);
     }
 }
