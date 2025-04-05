@@ -1,15 +1,14 @@
+#include "private.h" // append
 #include "ublox.h"
 #include "ublox_enums.h"
 
-#include <ft_string.h>
+#include <o2s/string.h> // string_t
 
-#include <inttypes.h>
+#include <inttypes.h> // PRI*
 
-#define append(S, ...) string_append_format(&S, __VA_ARGS__)
-
-t_string ublox_header_tostring(const struct ublox_header* message)
+string_t ublox_header_tostring(const struct ublox_header* message)
 {
-	t_string result = NEW_STRING;
+	string_t result = string_new();
 
 	append(result, "group: %s, ", cstring_from_ublox_class(message->ublox_class));
 	switch (message->ublox_class)

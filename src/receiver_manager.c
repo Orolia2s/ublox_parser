@@ -1,16 +1,15 @@
+#include "private.h" // append
 #include "ublox.h"
 #include "ublox_enums.h"
 #include "ublox_messages.h"
 
-#include <ft_string.h>
+#include <o2s/string.h> // string_t
 
 #include <inttypes.h> // PRI*
 
-#define append(S, ...) string_append_format(&S, __VA_ARGS__)
-
-t_string ublox_navigation_data_tostring(const struct ublox_navigation_data* message)
+string_t ublox_navigation_data_tostring(const struct ublox_navigation_data* message)
 {
-	t_string result = ublox_header_tostring(&message->header);
+	string_t result = ublox_header_tostring(&message->header);
 
 	if (is_valid_ublox_constellation(message->constellation))
 		append(result, ", constellation: %s",

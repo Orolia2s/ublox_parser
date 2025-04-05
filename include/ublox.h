@@ -7,14 +7,11 @@
  * This code assumes a Little Endian host.
  */
 
-#include "file_input_stream.h"
-#include "serial.h"
+#include <o2s/serial.h> // serial_port_t
+#include <o2s/string.h> // string_t
 
-#include <ft_string.h>
-
-#include <sys/types.h> // size_t
-
-#include <stdint.h>    // uint*_t
+#include <stddef.h> // size_t
+#include <stdint.h> // uint*_t
 
 extern const uint8_t        ublox_sync_chars[2];
 extern const size_t         ublox_smallest_message_size;
@@ -56,7 +53,7 @@ ublox_message_t* ublox_next_message(ifstream_t* port);
 
 ublox_checksum_t ublox_compute_checksum(const ublox_message_t* message, size_t size);
 
-t_string         ublox_header_tostring(const struct ublox_header* message);
+string_t         ublox_header_tostring(const struct ublox_header* message);
 
 /**
 @var ublox_header::class
