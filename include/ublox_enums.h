@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ft_prepro/enum.h>
+#include <blackmagic/enum.h> // DECLARE_ENUM_WITH_*
 
 /**
  * @file ublox_enums.h
