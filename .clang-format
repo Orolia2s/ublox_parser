@@ -14,7 +14,7 @@ IndentWrappedFunctionNames: false
 PPIndentWidth: 4
 
 # ----- Line length -----
-ColumnLimit: 80
+ColumnLimit: 120
 PenaltyBreakAssignment: 20
 PenaltyBreakBeforeFirstCallParameter: 40
 PenaltyBreakComment: 25
@@ -30,6 +30,7 @@ AlignConsecutiveMacros: AcrossEmptyLinesAndComments
 #    AcrossEmptyLines: true
 #    AcrossComments: true
 AlignEscapedNewlines: Left
+ForEachMacros: ['array_foreach', 'array_enumerate', 'deque_foreach', 'deque_enumerate', 'string_foreach', 'string_enumerate']
 
 # ----- Align -----
 AlignAfterOpenBracket: 'Align'
@@ -106,11 +107,11 @@ SortIncludes: 'true'
 IncludeBlocks: Regroup
 IncludeIsMainRegex: '$'
 IncludeCategories:
-  - Regex:           '^<c(assert|complex|w?ctype|errno|float|inttypes|limits|locale|(tg)?math|signal|string|threads|time|[uw]char|.*std.*)>$'
+  - Regex:           '^<c(assert|complex|w?ctype|errno|float|inttypes|limits|locale|(tg)?math|signal|string|threads|time|[uw]char|.*std.*|iso646)>$'
     Priority:        8
   - Regex:           '^<[a-z_]+>$'
     Priority:        9
-  - Regex:           '^<(assert|complex|w?ctype|errno|float|inttypes|limits|locale|(tg)?math|signal|string|threads|time|[uw]char|.*std.*)\.h>$'
+  - Regex:           '^<(assert|complex|w?ctype|errno|float|inttypes|limits|locale|(tg)?math|signal|string|threads|time|[uw]char|.*std.*|iso646)\.h>$'
     Priority:        8
   - Regex:           '^<(sys|arpa|netinet)/.*>$'
     Priority:        7

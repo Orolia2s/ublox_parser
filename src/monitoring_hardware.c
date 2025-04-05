@@ -19,13 +19,13 @@ string_t ublox_monitoring_hardware_tostring(const struct ublox_monitoring_hardwa
 	         (PRIu16,       noise_per_ms),
 	         (PRIu16,       agc_count)),
 	    append_field, result, message);
-	append(result, ", antenna_status: %s", cstring_from_ublox_antenna_status(message->antenna_status));
-	append(result, ", antenna_power: %s",  cstring_from_ublox_antenna_power(message->antenna_power));
-	FOR(EACH(("s", boolalpha(is_rtc_calibrated)),
-	         ("s", boolalpha(in_safe_boot_mode))),
+	append(result, ", antenna_status: %s", ublox_antenna_status_to_cstring(message->antenna_status));
+	append(result, ", antenna_power: %s",  ublox_antenna_power_to_cstring(message->antenna_power));
+	FOR(EACH(("u", is_rtc_calibrated),
+	         ("u", in_safe_boot_mode)),
 	    append_field, result, message);
-	append(result, ", %s", cstring_from_ublox_jamming_state(message->jamming_state));
-	FOR(EACH(("B", is_crystal_absent),
+	append(result, ", %s", ublox_jamming_state_to_cstring(message->jamming_state));
+	FOR(EACH(("u", is_crystal_absent),
 	         ("#.8" PRIx32, used_mask)),
 	    append_field, result, message);
 	append(result, ", vp: [");

@@ -7,8 +7,9 @@
  * This code assumes a Little Endian host.
  */
 
-#include <o2s/serial.h> // serial_port_t
-#include <o2s/string.h> // string_t
+#include <o2s/input_stream.h> // istream_t
+#include <o2s/serial.h>       // serial_port_t
+#include <o2s/string.h>       // string_t
 
 #include <stddef.h> // size_t
 #include <stdint.h> // uint*_t
@@ -49,7 +50,7 @@ struct ublox_footer
 
 bool             ublox_port_config(serial_port_t* port, int64_t baudrate);
 
-ublox_message_t* ublox_next_message(ifstream_t* port);
+ublox_message_t* ublox_next_message(istream_t* port);
 
 ublox_checksum_t ublox_compute_checksum(const ublox_message_t* message, size_t size);
 
