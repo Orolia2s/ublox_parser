@@ -1,33 +1,36 @@
-#include "serial.h"
 #include "ublox.h"
 #include "ublox_enums.h"
 
-#include <ft_array.h>
-#include <ft_printf.h>
-#include <libft.h>
-#include <log.h>
+#include <o2s/array.h>
+#include <o2s/log.h>
 
-#include <sys/types.h> // ssize_t
+#include <stddef.h> // size_t
 
-#include <stdlib.h>
-
-static void ftq_pop_front_into_array(t_deque* queue, t_array* array, size_t count)
+enum parser_error
 {
-	fta_reserve(array, count);
-	ftq_pop_front(queue, ARRAY_END(array), count);
-	array->size += count;
+	PARSER_SUCCESS, /**< Not an error: an ublox message was successfully parsed */
+	PARSER_GARBAGE, /**< The first 2 characters read were not as expected, just try again */
+	PARSER_ERROR_READ = 8,/**< Could not read enough characters */
+	PARSER_ERROR_UNREACHABLE, /**< It should not be possible to emit this error */
+};
+
+static void queue_pop_into_array(queue_t* queue, array_t* array, size_t count)
+{
+	array_reserve(array, count);
+	queue_pop_n(queue, array_end(array), count);
+	array->count += count;
 }
 
-ublox_message_t* ublox_next_message(ifstream_t* file)
+ublox_message_t* ublox_next_message(istream_t* input)
 {
-	t_deque* queue    = &file->buffer;
-	t_array  result[] = {NEW_ARRAY(uint8_t)};
+	queue_t* queue    = &input->buffer;
+	array_t  result[] = {ArrayNew(uint8_t)};
 
 sync:
-	while (file_accumulate(file, sizeof(ublox_sync_chars) + ublox_smallest_message_size)
-	       && *(uint8_t*)ftq_first(queue) != ublox_sync_chars[0])
+	while (istream_accumulate(input, sizeof(ublox_sync_chars) + ublox_smallest_message_size)
+	       && *(uint8_t*)queue_first(queue) != ublox_sync_chars[0])
 	{
-		FTQ_POP_FRONT_ONE(queue, NULL);
+		queue_pop(queue, NULL);
 	}
 	if (ftq_is_empty(queue) || *(uint8_t*)ftq_first(queue) != ublox_sync_chars[0])
 		goto fail;

@@ -1,12 +1,11 @@
 #include "ublox_reader.h"
 
-struct ublox_reader ublox_reader_init(ifstream_t* input)
+struct ublox_reader ublox_reader_init(istream_t* input)
 {
-	return (struct ublox_reader){ .input = input, .callbacks = NEW_ARRAY(ublox_callback_t) };
+	return (struct ublox_reader){ .input = input, .callbacks = ArrayNew(ublox_callback_t) };
 }
 
 void ublox_reader_close(ublox_reader_t* self)
 {
-	file_close(self->input);
-	fta_clear(&self->callbacks);
+	array_clear(&self->callbacks);
 }
