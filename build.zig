@@ -26,6 +26,7 @@ pub fn build(b: *std.Build) void {
             "receive.c",
             "receiver_manager.c",
             "subscribe.c",
+            "serial_print_config.c",
         },
     });
     lib.addIncludePath(b.path("include"));

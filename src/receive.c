@@ -72,4 +72,19 @@ enum parser_error ublox_parse_single_message(istream_t* input, array_t* output)
 /** Places the first valid ublox message encountered in _output_ */
 bool ublox_next_message(istream_t* input, array_t* output)
 {
+	enum parser_error status;
+
+	do {
+		status = ublox_parse_single_message(input, output);
+		switch (status) {
+		case PARSER_SUCCESS: return true;
+		case PARSER_ERROR_WRONG_CHECKSUM:
+			log_warning("Corrupted message discarded");
+			break;
+		case PARSER_ERROR_UNREACHABLE:
+			log_fatal("The code is broken, stop using this version and report it to the devs !");
+			break;
+		}
+	} while (status < PARSER_ERROR_READ);
+	return false;
 }
