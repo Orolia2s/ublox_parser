@@ -1,4 +1,5 @@
 #include "ublox.h"
+#include "ublox_enums.h"
 
 #include <libunit.h>                 // TEST_SECTION TEST_GROUP
 #include <o2s/array.h>               // Array
@@ -21,6 +22,15 @@
 			log_error("Parsing %s returned %u instead of %u", string_to_cstring(&str), status, EXPECTED); \
 		}                                                                                                 \
 		status == EXPECTED;                                                                               \
+	})
+
+#define expect_success(NAME, INPUT_STRING, LENGTH, CLASS, TYPE, SIZE)                                                  \
+	({                                                                                                                 \
+		StringInputStream stream  = cstring_input_stream(INPUT_STRING, LENGTH);                                        \
+		Array             storage = ArrayNew(uint8_t);                                                                 \
+		enum parser_error status  = ublox_parse_single_message(&stream, &storage);                                     \
+		ublox_message_t*  message = (ublox_message_t*)array_first(&storage);                                           \
+		status == PARSER_SUCCESS && message->ublox_class == CLASS && message->type == TYPE && message->length == SIZE; \
 	})
 
 #define expect_error_autolen(NAME, INPUT_STRING, EXPECTED) \
@@ -57,6 +67,12 @@ TEST_SECTION(parse_error_checksum, extract_name, expect_error,
              (second, MU "b\x01\x07\x06\x00Hello!\xaa\x15", 14, PARSER_ERROR_WRONG_CHECKSUM)
 	);
 
+TEST_SECTION(parse_success, extract_name, expect_success,
+             (NAV_PVT, MU "b\x01\x07\x02\x00" "OK" "\xa4\x1a", 10, NAV, PVT, 2),
+             (RXM_SFRBX, MU "b\x02\x13\x05\x00" "Hello" "\x0e\x54", 13, RXM, SFRBX, 5),
+             (MON_RF, MU "b\x0A\x38\x0B\x00" "Hello World" "\x69\x35", 19, MON, RF, 11)
+	);
+
 int test_parse()
 {
 	TEST_GROUP("parser");
@@ -65,5 +81,6 @@ int test_parse()
 		|| test_parse_error_class()
 		|| test_parse_error_not_enough()
 		|| test_parse_error_checksum()
+		|| test_parse_success()
 		;
 }
