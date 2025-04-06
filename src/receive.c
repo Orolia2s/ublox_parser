@@ -69,7 +69,10 @@ enum parser_error ublox_parse_single_message(istream_t* input, array_t* output)
 	return PARSER_SUCCESS;
 }
 
-/** Places the first valid ublox message encountered in _output_ */
+/**
+ * Places the first valid ublox message encountered in _output_.
+ * Note that it will block until a valid message is received
+ */
 bool ublox_next_message(istream_t* input, array_t* output)
 {
 	enum parser_error status;
@@ -87,4 +90,12 @@ bool ublox_next_message(istream_t* input, array_t* output)
 		}
 	} while (status < PARSER_ERROR_READ);
 	return false;
+}
+
+/** Similar to @ref ublox_next_message but will not block longer than _timeout_ms_ */
+bool ublox_next_message_with_timeout(istream_t* input, array_t* output, o2s_timer_t* timer, unsigned timeout_ms)
+{
+	ArmedTimer armed = o2s_timer_start(*timer, timeout_ms);
+
+	return ublox_next_message(input, output);
 }
