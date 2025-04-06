@@ -25,14 +25,14 @@ static bool queue_pop_into_array(queue_t* queue, array_t* array, size_t count)
  */
 enum parser_error ublox_parse_single_message(istream_t* input, array_t* output)
 {
-	char              current;
+	uint8_t           current;
 	ublox_message_t** message = (ublox_message_t**)&output->start;
 	ublox_checksum_t  computed;
 
 	array_clear(output);
 	if (not istream_accumulate(input, sizeof(ublox_sync_chars) + ublox_smallest_message_size))
 		return PARSER_ERROR_READ;
-	if (queue_pop(&input->buffer, &current))
+	if (not queue_pop(&input->buffer, &current))
 		return PARSER_ERROR_UNREACHABLE;
 	if (current != ublox_sync_chars[0])
 		return PARSER_GARBAGE;
