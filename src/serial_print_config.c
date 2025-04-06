@@ -1,9 +1,9 @@
 #include "private.h" // boolalpha
-#include "serial.h"
 
 #include <blackmagic/color.h> // COLOR
 #include <blackmagic/for.h>   // FOR EACH
 #include <blackmagic/token.h> // STRINGIZE
+#include <o2s/serial.h>       // serial_*
 
 #include <stdio.h> // printf
 
@@ -65,7 +65,7 @@ static void serial_print_local_modes(const struct serial_local_modes* modes)
 }
 
 #define PRINT_UCHAR(CHARS, NAME) \
-	printf("    %-*s: %#.2hhx\n", WIDTH, PP_STR(NAME), CHARS->NAME);
+	printf("    %-*s: %#.2hhx\n", WIDTH, STRINGIZE(NAME), CHARS->NAME);
 
 static void serial_print_control_characters(union serial_control_characters* chars)
 {
@@ -78,7 +78,7 @@ static void serial_print_control_characters(union serial_control_characters* cha
  */
 bool serial_print_config(serial_port_t* port)
 {
-	serial_ensure_options(port);
+	serial_get_options(port);
 	printf("serial_port_options:\n");
 	serial_print_input_modes(&port->options.input);
 	serial_print_output_modes(&port->options.output);

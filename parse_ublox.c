@@ -15,6 +15,8 @@
 #include <stdio.h>  // printf
 #include <stdlib.h> // free
 
+bool serial_print_config(serial_port_t* port);
+
 /** Create a u16 from two u8 */
 #define PAIR(HIGH, LOW) (((HIGH) << 8) | (LOW))
 
@@ -54,32 +56,31 @@ void parse_ublox(const char* file_name, bool passive, bool is_file)
 		port.file = file_open(file_name, O_RDONLY);
 	else
 	{
-		port = serial_open(file_name);
+		port = serial_open_readwrite(file_name);
 
-		if (!passive && ublox_port_config(&port, 115200) == false)
+		if (!passive && serial_make_raw(&port, 115200) == false)
 			return ;
 		serial_print_config(&port);
-
 	}
 
 	if (port.file.descriptor < 0)
 		return ;
 
-	Reader        reader = ublox_reader_init(&port.file);
+	Reader reader = ublox_reader_init(&port.file.stream);
 
 	ublox_subscribe(&reader, ublox_printer);
 	ublox_reader_loop(&reader);
 }
 
-const char* argp_program_version     = "ublox_parser " PP_STR(VERSION);
+const char* argp_program_version     = "ublox_parser " STRINGIZE(VERSION);
 const char* argp_program_bug_address = "<antoine.gagniere@orolia2s.com>";
 static char doc[]      = "Prints serial port configuration and ublox messages.";
 static char args_doc[] = "[PATH]";
 
 static struct argp_option options[] = {
-    {"passive", 'p', 0, OPTION_ARG_OPTIONAL, "Do not change the port configuration, only display it.", 1},
-    {"file", 'f', 0, OPTION_ARG_OPTIONAL, "Input is not a serial port but a file", 1},
-    {0}
+	{"passive", 'p', 0, OPTION_ARG_OPTIONAL, "Do not change the port configuration, only display it. Defaults to false", 1},
+	{"file", 'f', 0, OPTION_ARG_OPTIONAL, "Input is not a serial port but a file. Defaults to false", 1},
+	{0}
 };
 
 struct arguments
