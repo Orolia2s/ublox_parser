@@ -1,19 +1,18 @@
 #include "ublox_reader.h"
 
-#include <stdlib.h> // free
+#include <stddef.h> // uint8_t
 
 bool ublox_reader_loop(ublox_reader_t* reader)
 {
-	ublox_message_t* message;
+	Array            message = ArrayNew(uint8_t);
 	ublox_callback_t callback;
 
-	while ((message = ublox_next_message(reader->input)))
+	while (ublox_next_message(reader->input, &message))
 	{
 		array_foreach(ublox_callback_t, &reader->callbacks, &callback)
 		{
-			callback(message);
+			callback((ublox_message_t*)array_first(&message));
 		}
-		free(message);
 	}
 	return true;
 }

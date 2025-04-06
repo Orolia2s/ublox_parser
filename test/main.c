@@ -11,7 +11,7 @@
  * there might be a dependency.
  */
 #define TEST_LIST \
-	serial_options, messages_size, checksum
+	serial_options, messages_size, checksum, parse
 
 #define DECLARE(NAME) \
     int JOIN(test, NAME)(void);
