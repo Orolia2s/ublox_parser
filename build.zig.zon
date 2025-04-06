@@ -8,8 +8,8 @@
             .hash = "libo2s-1.8.0-fUXQWDNdAgCCNbISqAuU2KShJQxQibbDFqSZbNptmgu2",
         },
         .libft = .{
-            .url = "git+https://github.com/agagniere/Libft?ref=master#7bc274247fc73bc95f99803a6c23db8d0b7f4396",
-            .hash = "libft-2.11.0-w6XarmmFBADN7ySIVByikgH_RVcnas-H2Qgz4j-ud6Y8",
+            .url = "git+https://github.com/agagniere/Libft?ref=master#4547b02a64717acca105badec3bc8b6be9aa28ab",
+            .hash = "libft-2.11.0-w6XarmaGBADD6PCGH5FF4zzgqoJQ4IERfN9JTSAEyluC",
         },
         .blackmagic = .{
             .url = "git+https://github.com/agagniere/blackmagic?ref=master#c04a70e1b3b241e586d0843143abb31fa961bf73",

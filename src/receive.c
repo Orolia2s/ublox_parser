@@ -8,19 +8,6 @@
 #include <iso646.h>   // not
 #include <stddef.h>   // size_t
 
-enum parser_error
-{
-	PARSER_SUCCESS, /**< Not an error: an ublox message was successfully parsed */
-	/* Warnings: */
-	PARSER_GARBAGE, /**< The first 2 characters read were not as expected, just try again */
-	/* Errors: */
-	PARSER_ERROR_INVALID_CLASS = 4, /**< A possible ublox message had an unknown class */
-	PARSER_ERROR_WRONG_CHECKSUM,    /**< The integrity check failed, the message may be corrupted */
-	/* Fatal errors: */
-	PARSER_ERROR_READ = 8,    /**< Could not read enough characters */
-	PARSER_ERROR_UNREACHABLE, /**< It should not be possible to emit this error */
-};
-
 static bool queue_pop_into_array(queue_t* queue, array_t* array, size_t count)
 {
 	if (queue->type_size != array->type_size
@@ -32,6 +19,10 @@ static bool queue_pop_into_array(queue_t* queue, array_t* array, size_t count)
 	return true;
 }
 
+/**
+ * Try to parse the first bytes of _input_ as an ublox message.
+ * Stops at the first error
+ */
 enum parser_error ublox_parse_single_message(istream_t* input, array_t* output)
 {
 	char              current;
@@ -78,6 +69,7 @@ enum parser_error ublox_parse_single_message(istream_t* input, array_t* output)
 	return PARSER_SUCCESS;
 }
 
-ublox_message_t* ublox_next_message(istream_t* input)
+/** Places the first valid ublox message encountered in _output_ */
+bool ublox_next_message(istream_t* input, array_t* output)
 {
 }

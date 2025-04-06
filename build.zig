@@ -61,9 +61,9 @@ pub fn build(b: *std.Build) void {
             .optimize = optimize,
         });
         const run_unit_tests = b.addRunArtifact(unit_tests);
-        const libft = b.dependency("libft", .{ .target = target, .optimize = optimize });
+        const libft = b.dependency("libft", .{ .target = target, .optimize = optimize, .@"libunit-long-output" = true });
 
-        unit_tests.addCSourceFiles(.{ .root = b.path("test"), .files = &.{ "checksum.c", "main.c", "message_size.c", "serial.c" } });
+        unit_tests.addCSourceFiles(.{ .root = b.path("test"), .files = &.{ "checksum.c", "main.c", "message_size.c", "serial.c", "parse.c" } });
         unit_tests.linkLibrary(lib);
         unit_tests.linkLibrary(libo2s);
         unit_tests.linkLibrary(libft.artifact("ft"));
