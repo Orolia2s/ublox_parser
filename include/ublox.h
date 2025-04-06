@@ -11,6 +11,7 @@
 #include <o2s/input_stream.h> // istream_t
 #include <o2s/serial.h>       // serial_port_t
 #include <o2s/string.h>       // string_t
+#include <o2s/timer.h>        // o2s_timer_t
 
 #include <stddef.h> // size_t
 #include <stdint.h> // uint*_t
@@ -68,6 +69,7 @@ enum parser_error
 
 enum parser_error ublox_parse_single_message(istream_t* input, array_t* output);
 bool              ublox_next_message(istream_t* input, array_t* output);
+bool ublox_next_message_with_timeout(istream_t* input, array_t* output, o2s_timer_t* timer, unsigned timeout_ms);
 
 /**
 @var ublox_header::class
