@@ -52,6 +52,7 @@ void parse_ublox(const char* file_name, bool passive, bool is_file)
 {
 	serial_port_t port;
 
+	printf("---\n");
 	if (is_file)
 		port.file = file_open(file_name, O_RDONLY);
 	else
@@ -111,7 +112,6 @@ int                main(int arg_count, char** arg_values)
 {
 	struct arguments arguments = {.is_passive = false, .is_file = false};
 
-	printf("---\n");
 	argp_parse(&argp, arg_count, arg_values, 0, 0, &arguments);
 	return 0;
 }
