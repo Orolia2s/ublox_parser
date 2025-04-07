@@ -61,3 +61,10 @@ Prints serial port configuration and ublox messages.
 
 Report bugs to <antoine.gagniere@orolia2s.com>.
 ```
+
+### Generate documentation
+
+```shell
+zig build doc
+open doc/html/index.html
+```

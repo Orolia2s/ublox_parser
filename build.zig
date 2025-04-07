@@ -1,5 +1,8 @@
 const std = @import("std");
 
+// Waiting for https://github.com/ziglang/zig/pull/20510
+const VERSION = "0.2.0";
+
 pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{ .preferred_optimize_mode = .ReleaseSafe });
     const target = b.standardTargetOptions(.{});
@@ -74,5 +77,13 @@ pub fn build(b: *std.Build) void {
         unit_tests.addIncludePath(libft.path("test/framework"));
         unit_tests.addIncludePath(libft.path("include")); // ugly fix
         test_step.dependOn(&run_unit_tests.step);
+    }
+    { // Documentation
+        const doc_step = b.step("doc", "Generate the documentation as a static website");
+        const run_doxygen = b.addSystemCommand(&.{"doxygen"});
+
+        run_doxygen.addFileArg(b.path("doc/Doxyfile"));
+        run_doxygen.setEnvironmentVariable("PROJECT_VERSION", VERSION);
+        doc_step.dependOn(&run_doxygen.step);
     }
 }
