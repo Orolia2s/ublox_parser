@@ -24,7 +24,7 @@ zig fetch --save git+https://github.com/Orolia2s/ublox_parser#master
 
 Then, in your `build.zig`:
 ```zig
-const ublox = b.dependency("ublox_parser", { .target = target, .optimize = optimize }).artifact("ublox_parser");
+const ublox = b.dependency("ublox_parser", .{ .target = target, .optimize = optimize }).artifact("ublox_parser");
 
 // wherever needed:
 exe.linkLibrary(ublox);
