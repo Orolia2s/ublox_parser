@@ -63,7 +63,14 @@ enum parser_error ublox_parse_single_message(istream_t* input, array_t* output)
 	computed = ublox_compute_checksum(array_first(output), array_count(output));
 	if (*(uint8_t*)queue_first(&input->buffer) != computed.a
 	    || *(uint8_t*)queue_get(&input->buffer, 1) != computed.b)
+	{
+		log_warning("Received a corrupted message of class %s and length %" PRIu16
+		            ", computed checksum %#.2" PRIx8 " %#.2" PRIx8 " != %#.2" PRIx8 " %#.2" PRIx8 " transmitted",
+		            ublox_class_to_cstring((*message)->ublox_class), (*message)->length,
+		            computed.a, computed.b,
+		            *(uint8_t*)queue_first(&input->buffer), *(uint8_t*)queue_get(&input->buffer, 1));
 		return PARSER_ERROR_WRONG_CHECKSUM;
+	}
 	if (not queue_pop_n(&input->buffer, NULL, sizeof(struct ublox_footer)))
 		return PARSER_ERROR_UNREACHABLE;
 	return PARSER_SUCCESS;
@@ -81,12 +88,9 @@ bool ublox_next_message(istream_t* input, array_t* output)
 		status = ublox_parse_single_message(input, output);
 		switch (status) {
 		case PARSER_SUCCESS: return true;
-		case PARSER_ERROR_WRONG_CHECKSUM:
-			log_warning("Corrupted message discarded");
-			break;
 		case PARSER_ERROR_UNREACHABLE:
 			log_fatal("The code is broken, stop using this version and report it to the devs !");
-			break;
+			return false;
 		}
 	} while (status < PARSER_ERROR_READ);
 	return false;
