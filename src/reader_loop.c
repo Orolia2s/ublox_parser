@@ -16,7 +16,7 @@ bool ublox_reader_loop(ublox_reader_t* reader)
 
 	if (!timer.created)
 		return false;
-	while (ublox_next_message_with_timeout(reader->input, &message, &timer, 100))
+	while (ublox_next_message_with_timeout(reader->input, &message, &timer, reader->timeout_ms))
 	{
 		array_foreach(ublox_callback_t, &reader->callbacks, &callback)
 		{

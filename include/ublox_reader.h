@@ -18,8 +18,9 @@ typedef struct ublox_reader ublox_reader_t;
 
 struct ublox_reader
 {
-	istream_t* input; /**< Buffered input stream */
-	array_t callbacks; /**< List of callbacks */
+	istream_t* input;      /**< Buffered input stream */
+	array_t    callbacks;  /**< List of callbacks */
+	unsigned   timeout_ms; /**< Number of millisecond to wait for the next ublox message. Past this delay the loop exits */
 };
 
 struct ublox_reader ublox_reader_init(istream_t* input);
