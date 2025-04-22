@@ -1,6 +1,10 @@
 #pragma once
 
-#include <blackmagic/enum.h> // DECLARE_ENUM_WITH_*
+#ifdef DOXYGEN
+#	include <ft_prepro/enum.h> // DECLARE_ENUM_WITH_* without __VA_OPT__
+#else
+#	include <blackmagic/enum.h> // DECLARE_ENUM_WITH_*
+#endif
 
 /**
  * @file ublox_enums.h
@@ -12,7 +16,7 @@
  * Message Class IDs.
  * A class is a grouping of messages which are related to each other.
  *
- * Those are the possible values of @ref ublox_header::class
+ * Those are the possible values of @ref ublox_header::ublox_class
  */
 DECLARE_ENUM_WITH_VALUES(ublox_class,
 	(NAV /**< Navigation Results Messages              */, 0x01),

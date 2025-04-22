@@ -72,7 +72,7 @@ bool              ublox_next_message(istream_t* input, array_t* output);
 bool ublox_next_message_with_timeout(istream_t* input, array_t* output, o2s_timer_t* timer, unsigned timeout_ms);
 
 /**
-@var ublox_header::class
+@var ublox_header::ublox_class
 A class is a group of messages that are related to each other
 
 @var ublox_header::type

@@ -14,6 +14,7 @@ pub fn build(b: *std.Build) void {
 
     const libo2s = b.dependency("libo2s", .{ .target = target, .optimize = optimize }).artifact("o2s");
     const blackmagic = b.dependency("blackmagic", .{});
+    const libft = b.dependency("libft", .{ .target = target, .optimize = optimize, .@"libunit-long-output" = true });
 
     lib.addCSourceFiles(.{
         .root = b.path("src"),
@@ -65,7 +66,6 @@ pub fn build(b: *std.Build) void {
             .optimize = optimize,
         });
         const run_unit_tests = b.addRunArtifact(unit_tests);
-        const libft = b.dependency("libft", .{ .target = target, .optimize = optimize, .@"libunit-long-output" = true });
 
         unit_tests.addCSourceFiles(.{ .root = b.path("test"), .files = &.{ "checksum.c", "main.c", "message_size.c", "serial.c", "parse.c" } });
         unit_tests.linkLibrary(lib);
@@ -84,6 +84,7 @@ pub fn build(b: *std.Build) void {
 
         run_doxygen.addFileArg(b.path("doc/Doxyfile"));
         run_doxygen.setEnvironmentVariable("PROJECT_VERSION", VERSION);
+        run_doxygen.setEnvironmentVariable("INCLUDE_PATH", libft.path("include").getPath(b));
         doc_step.dependOn(&run_doxygen.step);
     }
 }
