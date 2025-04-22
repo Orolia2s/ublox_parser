@@ -1,7 +1,7 @@
 #include "ublox.h"
 #include "ublox_reader.h"
 
-void ublox_subscribe(ublox_reader_t* reader, ublox_callback_t callback)
+bool ublox_subscribe(ublox_reader_t* reader, ublox_callback_t callback)
 {
-	array_push_back(&reader->callbacks, &callback);
+	return array_push_back(&reader->callbacks, &callback);
 }

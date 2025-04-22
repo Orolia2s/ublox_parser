@@ -25,7 +25,7 @@ struct ublox_reader
 struct ublox_reader ublox_reader_init(istream_t* input);
 void                ublox_reader_close(ublox_reader_t* self);
 
-void ublox_subscribe(ublox_reader_t* reader, ublox_callback_t callback);
+bool ublox_subscribe(ublox_reader_t* reader, ublox_callback_t callback);
 bool ublox_reader_loop(ublox_reader_t* reader);
 
 /** RAII ublox_reader_t */

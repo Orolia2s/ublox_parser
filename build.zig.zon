@@ -1,6 +1,6 @@
 .{
     .name = .ublox_parser,
-    .version = "0.2.0",
+    .version = "0.2.1",
     .fingerprint = 0xb3ddc4520c4a163f,
     .dependencies = .{
         .libo2s = .{
