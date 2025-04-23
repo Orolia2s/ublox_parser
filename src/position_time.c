@@ -15,6 +15,7 @@ string_t ublox_position_time_tostring(const struct ublox_position_time* message)
 	         (PRIu16, year),
 	         (PRIu8,  month),
 	         (PRIu8,  day),
+	         (PRIu8,  hour),
 	         (PRIu8,  minute),
 	         (PRIu8,  second),
 	         ("u",    is_date_valid),
@@ -35,7 +36,13 @@ string_t ublox_position_time_tostring(const struct ublox_position_time* message)
 	         (PRIi32, velocity_east),
 	         (PRIi32, velocity_down),
 	         (PRIi32, ground_speed),
-	         (PRIi32, heading)
+	         (PRIi32, heading),
+	         (PRIu32, speed_accuracy),
+	         (PRIu32, heading_accuracy),
+	         (PRIu16, dop),
+	         (PRIi32, vehicle_heading),
+	         (PRIi16, magnetic_declination),
+	         (PRIu16, magnetic_accuracy)
 		    ),
 	    append_field, result, message);
 
