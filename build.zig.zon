@@ -4,8 +4,8 @@
     .fingerprint = 0xb3ddc4520c4a163f,
     .dependencies = .{
         .libo2s = .{
-            .url = "git+https://github.com/Orolia2s/libo2s?ref=master#7a93413a89950172f3e3014292ca262088a92424",
-            .hash = "libo2s-1.8.0-fUXQWARdAgCOQK3opSCTO3GHpLywrX4Q2tsEm---EAZr",
+            .url = "git+https://github.com/Orolia2s/libo2s?ref=master#4f8d0d34273e18f8ba5abdfc74be89734ad14688",
+            .hash = "libo2s-1.8.1-fUXQWD1fAgDOam8NRqokrgW9_cOwbwxXZoF-8SOpyfPe",
         },
         .libft = .{
             .url = "git+https://github.com/agagniere/Libft?ref=master#4547b02a64717acca105badec3bc8b6be9aa28ab",
