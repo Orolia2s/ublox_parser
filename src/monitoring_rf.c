@@ -43,6 +43,8 @@ string_t ublox_monitoring_rf_tostring(const struct ublox_monitoring_rf* message)
 		string_append(&result, &str);
 		string_append_char(&result, '}');
 		block++;
+		if (block != blocks_end)
+			string_append_char(&result, ',');
 	}
 	string_append_char(&result, ']');
 	return result;

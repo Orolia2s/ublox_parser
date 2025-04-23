@@ -18,7 +18,7 @@
 bool serial_print_config(serial_port_t* port);
 
 /** Create a u16 from two u8 */
-#define PAIR(HIGH, LOW) (((HIGH) << 8) | (LOW))
+#define PAIR(LOW, HIGH) (((HIGH) << 8) | (LOW))
 
 void ublox_printer(ublox_message_t* message)
 {
