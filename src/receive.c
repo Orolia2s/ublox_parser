@@ -8,17 +8,6 @@
 #include <iso646.h>   // not
 #include <stddef.h>   // size_t
 
-static bool queue_pop_into_array(queue_t* queue, array_t* array, size_t count)
-{
-	if (queue->type_size != array->type_size
-	    || queue_count(queue) < count
-	    || not array_reserve(array, count)
-	    || not queue_pop_n(queue, array_end(array), count))
-		return false;
-	array->count += count;
-	return true;
-}
-
 /**
  * Try to parse the first bytes of _input_ as an ublox message.
  * Stops at the first error

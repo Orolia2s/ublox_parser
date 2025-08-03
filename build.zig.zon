@@ -1,21 +1,21 @@
 .{
     .name = .ublox_parser,
-    .version = "0.2.1",
+    .version = "0.2.2",
     .fingerprint = 0xb3ddc4520c4a163f,
     .minimum_zig_version = "0.14.0",
 
     .dependencies = .{
         .libo2s = .{
-            .url = "git+https://github.com/Orolia2s/libo2s?ref=master#4f8d0d34273e18f8ba5abdfc74be89734ad14688",
-            .hash = "libo2s-1.8.1-fUXQWD1fAgDOam8NRqokrgW9_cOwbwxXZoF-8SOpyfPe",
+            .url = "git+https://github.com/Orolia2s/libo2s?ref=master#8ea7364aa5d0f07f3b16af56e3e221a31961349f",
+            .hash = "libo2s-1.8.2-fUXQWBViAgAtoWJpXz932-5k-v2thxh0rCM7J9u6tDFV",
         },
         .libft = .{
             .url = "git+https://github.com/agagniere/Libft?ref=master#4547b02a64717acca105badec3bc8b6be9aa28ab",
             .hash = "libft-2.11.0-w6XarmaGBADD6PCGH5FF4zzgqoJQ4IERfN9JTSAEyluC",
         },
         .blackmagic = .{
-            .url = "git+https://github.com/agagniere/blackmagic?ref=master#e1e8feeaab0bc6eec7e3756f2b6af5f611f23927",
-            .hash = "blackmagic-0.3.3-62-rPPPjAACHWzrF2rm5xTx7dHpRs1jVi-EO-2uVutA9",
+            .url = "git+https://github.com/agagniere/blackmagic?ref=master#b6f0922c7a1e9ffbb082fc01b4f8cf222e443548",
+            .hash = "blackmagic-0.4.0-62-rPNntAABzfbIiwdzai4Eh0k21ntNsipTlnXHR2o9c",
         },
     },
     .paths = .{
