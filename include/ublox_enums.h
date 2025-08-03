@@ -18,7 +18,8 @@
  *
  * Those are the possible values of @ref ublox_header::ublox_class
  */
-DECLARE_ENUM_WITH_VALUES(ublox_class,
+DECLARE_ENUM_WITH_VALUES(
+	ublox_class,
 	(NAV /**< Navigation Results Messages              */, 0x01),
 	(RXM /**< Receiver Manager Messages                */, 0x02),
 	(INF /**< Information Messages                     */, 0x04),
@@ -35,37 +36,49 @@ DECLARE_ENUM_WITH_VALUES(ublox_class,
 /**
  * Possible messages in the MON class
  */
-DECLARE_ENUM_WITH_VALUES(ublox_monitoring_message,
-	(HW    /**< Hardware status                */, 0x09),
-	(HW2   /**< Extended Hardware status       */, 0x0b),
-	(SPAN  /**< Signal characteristics         */, 0x31),
-	(HW3   /**< I/O pin status                 */, 0x37),
-	(RF    /**< Radio Frequency information    */, 0x38),
-	(COMMS /**< Communication port information */, 0x36)
+DECLARE_ENUM_WITH_VALUES(
+	ublox_monitoring_message,
+	(IO    /**< I/O system status                */, 0x02),
+	(MSGPP /**< Message parse and process status */, 0x06),
+	(RXBUF /**< Receiver buﬀer status            */, 0x07),
+	(HW    /**< Hardware status                  */, 0x09),
+	(HW2   /**< Extended hardware status         */, 0x0b),
+	(PATCH /**< Installed patches                */, 0x27),
+	(GNSS  /**< Major GNSS selection             */, 0X28),
+	(SPAN  /**< Signal characteristics           */, 0x31),
+	(HW3   /**< I/O pin status                   */, 0x37),
+	(RF    /**< Radio Frequency information      */, 0x38),
+	(COMMS /**< Communication port information   */, 0x36)
 );
 
 /**
  * Possible messages in the RXM class
  */
-DECLARE_ENUM_WITH_VALUES(ublox_receiver_message,
-	(SFRBX /**< Broadcast navigation data subframe */, 0x13),
-	(RAWX  /**< Multi-GNSS raw measurements        */, 0x15),
-	(TM    /**< Time mark data for UBX-RXM-RAWX    */, 0x74)
+DECLARE_ENUM_WITH_VALUES(
+	ublox_receiver_message,
+	(SFRBX /**< Broadcast navigation data subframe  */, 0x13),
+	(RAWX  /**< Multi-GNSS raw measurements         */, 0x15),
+	(COR   /**< Diﬀerential correction input status */, 0x34),
+	(TM    /**< Time mark data for UBX-RXM-RAWX     */, 0x74)
 );
 
 /**
  * Possible messages in the NAV class
  */
-DECLARE_ENUM_WITH_VALUES(ublox_navigation_message,
+DECLARE_ENUM_WITH_VALUES(
+	ublox_navigation_message,
 	(STATUS  /**< Receiver navigation status                 */, 0x03),
 	(DOP     /**< Dilution of precision                      */, 0x04),
+	(PVT     /**< Navigation position velocity time solution */, 0x07),
 	(TIMEGPS /**<  */, 0x20),
+	(TIMEUTC /**<  */, 0x21),
 	(TIMEGLO /**<  */, 0x23),
 	(TIMEBDS /**<  */, 0x24),
 	(TIMEGAL /**<  */, 0x25),
 	(TIMELS  /**< Leap second event information              */, 0x26),
-	(PVT     /**< Navigation position velocity time solution */, 0x07),
+	(NMI     /**< Navigation message cross-check information */, 0x28),
 	(CLOCK   /**< Clock solution                             */, 0x22),
+	(ORB     /**< GNSS orbit database info                   */, 0x34),
 	(EOE     /**< End of epoch                               */, 0x61)
 );
 
@@ -103,3 +116,16 @@ DECLARE_ENUM_WITH_STRINGS(ublox_antenna_power,
 	(UBLOX_ANTENNA_ON,            "ON"     ),
 	(UBLOX_ANTENNA_POWER_UNKNOWN, "unknown")
 );
+
+/**
+@var IO
+@deprecated Use UBX-MON-COMMS instead
+@var MSGPP
+@deprecated Use UBX-MON-COMMS instead
+@var RXBUF
+@deprecated Use UBX-MON-COMMS instead
+@var HW
+@deprecated Use UBX-MON-HW3 and UBX-MON-RF instead
+@var HW2
+@deprecated Use UBX-MON-HW3 and UBX-MON-RF instead
+*/

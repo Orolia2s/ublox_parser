@@ -2,6 +2,8 @@
     .name = .ublox_parser,
     .version = "0.2.1",
     .fingerprint = 0xb3ddc4520c4a163f,
+    .minimum_zig_version = "0.14.0",
+
     .dependencies = .{
         .libo2s = .{
             .url = "git+https://github.com/Orolia2s/libo2s?ref=master#4f8d0d34273e18f8ba5abdfc74be89734ad14688",
