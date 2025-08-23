@@ -6,16 +6,26 @@ const VERSION = "0.2.0";
 pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{ .preferred_optimize_mode = .ReleaseSafe });
     const target = b.standardTargetOptions(.{});
-    const lib = b.addStaticLibrary(.{
-        .name = "ublox_parser",
+
+    const libo2s = b.dependency("libo2s", .{
         .target = target,
         .optimize = optimize,
+    }).artifact("o2s");
+    const blackmagic = b.dependency("blackmagic", .{});
+    const libft = b.dependency("libft", .{
+        .target = target,
+        .optimize = optimize,
+        .@"libunit-long-output" = true,
     });
 
-    const libo2s = b.dependency("libo2s", .{ .target = target, .optimize = optimize }).artifact("o2s");
-    const blackmagic = b.dependency("blackmagic", .{});
-    const libft = b.dependency("libft", .{ .target = target, .optimize = optimize, .@"libunit-long-output" = true });
-
+    const lib = b.addLibrary(.{
+        .name = "ublox_parser",
+        .root_module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+            .link_libc = true,
+        }),
+    });
     lib.addCSourceFiles(.{
         .root = b.path("src"),
         .files = &.{
@@ -36,7 +46,6 @@ pub fn build(b: *std.Build) void {
     lib.addIncludePath(b.path("include"));
     lib.addIncludePath(blackmagic.path("include"));
     lib.installHeadersDirectory(b.path("include"), "ublox_parser", .{});
-    lib.linkLibC();
     lib.linkLibrary(libo2s);
     b.installArtifact(lib);
 
@@ -44,8 +53,10 @@ pub fn build(b: *std.Build) void {
         const run_step = b.step("run", "Run the app");
         const exe = b.addExecutable(.{
             .name = "ublox_parser",
-            .target = target,
-            .optimize = optimize,
+            .root_module = b.createModule(.{
+                .target = target,
+                .optimize = optimize,
+            }),
         });
         const run_cmd = b.addRunArtifact(exe);
 
@@ -62,8 +73,10 @@ pub fn build(b: *std.Build) void {
         const test_step = b.step("test", "Run unit tests");
         const unit_tests = b.addExecutable(.{
             .name = "test_ublox_parser",
-            .target = target,
-            .optimize = optimize,
+            .root_module = b.createModule(.{
+                .target = target,
+                .optimize = optimize,
+            }),
         });
         const run_unit_tests = b.addRunArtifact(unit_tests);
 

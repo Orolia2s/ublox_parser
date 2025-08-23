@@ -6,12 +6,12 @@
 
     .dependencies = .{
         .libo2s = .{
-            .url = "git+https://github.com/Orolia2s/libo2s?ref=master#8ea7364aa5d0f07f3b16af56e3e221a31961349f",
-            .hash = "libo2s-1.8.2-fUXQWBViAgAtoWJpXz932-5k-v2thxh0rCM7J9u6tDFV",
+            .url = "git+https://github.com/Orolia2s/libo2s?ref=master#5cbc45755c40707841e1e74de7112908f5e3d1c0",
+            .hash = "libo2s-1.8.2-fUXQWKtiAgCIK_e5V5W97nuHHyvXS8GO04jJtTH5ZLzv",
         },
         .libft = .{
-            .url = "git+https://github.com/agagniere/Libft?ref=master#4547b02a64717acca105badec3bc8b6be9aa28ab",
-            .hash = "libft-2.11.0-w6XarmaGBADD6PCGH5FF4zzgqoJQ4IERfN9JTSAEyluC",
+            .url = "git+https://github.com/agagniere/Libft?ref=master#a50337f818aef04a2b5fb5e913a44d54378aa89a",
+            .hash = "libft-2.11.0-w6XaroSHBAAKPTYJ8jy50FM6HEAXuoNpDZz228IqPX07",
         },
         .blackmagic = .{
             .url = "git+https://github.com/agagniere/blackmagic?ref=master#b6f0922c7a1e9ffbb082fc01b4f8cf222e443548",
